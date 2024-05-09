@@ -15,27 +15,52 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 	private JMenuItem savePlayer = new JMenuItem("Save Current Player");
 	private JMenuItem openPlayer = new JMenuItem("Open Existing Player");
 
+	private JMenuItem updatePlayerDetails;
+	private JMenuItem dealAction;
+	private JMenuItem hitAction;
+	private JMenuItem doubleAction;
+	private JMenuItem standAction;
+	private JMenuItem oneChip;
+	private JMenuItem fiveChip;
+	private JMenuItem tenChip;
+	private JMenuItem twentyFiveChip;
+	private JMenuItem hundredChip;
+	private JMenuItem windowTableColourMenu;
+	private JMenuItem helpBlackjackRulesMenu;
+	private JMenuItem helpAboutMenu;
+
 	final int WIDTH = 600;
 	final int HEIGHT = 500;
 
 	public AppWindow() {
 		super("Blackjack");
 
+		configureWindow();
+		setupMenus();
+		setupKeyboardShortcuts();
+		setupActionListeners();
+		initializeComponents();
+
+		setVisible(true);
+	}
+
+	private void configureWindow() {
 		addComponentListener(this);
 
 		Dimension windowSize = new Dimension(WIDTH, HEIGHT);
 		setSize(windowSize);
 		setLocationRelativeTo(null); // put game in centre of screen
 
-		this.setBackground(defaultTableColour);
+		setBackground(defaultTableColour);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
-		// menu bar
+	private void setupMenus() {
 		JMenuBar menuBar = new JMenuBar();
 
 		JMenu playerMenu = new JMenu("Player");
-		JMenuItem updatePlayerDetails = new JMenuItem("Update Player Details");
+		updatePlayerDetails = new JMenuItem("Update Player Details");
 		playerMenu.add(updatePlayerDetails);
 		playerMenu.addSeparator();
 		playerMenu.add(savePlayer);
@@ -43,10 +68,10 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		menuBar.add(playerMenu);
 
 		JMenu actionMenu = new JMenu("Actions");
-		JMenuItem dealAction = new JMenuItem("Deal");
-		JMenuItem hitAction = new JMenuItem("Hit");
-		JMenuItem doubleAction = new JMenuItem("Double");
-		JMenuItem standAction = new JMenuItem("Stand");
+		dealAction = new JMenuItem("Deal");
+		hitAction = new JMenuItem("Hit");
+		doubleAction = new JMenuItem("Double");
+		standAction = new JMenuItem("Stand");
 		actionMenu.add(dealAction);
 		actionMenu.add(hitAction);
 		actionMenu.add(doubleAction);
@@ -54,11 +79,11 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		menuBar.add(actionMenu);
 
 		JMenu betMenu = new JMenu("Bet");
-		JMenuItem oneChip = new JMenuItem("$1");
-		JMenuItem fiveChip = new JMenuItem("$5");
-		JMenuItem tenChip = new JMenuItem("$10");
-		JMenuItem twentyFiveChip = new JMenuItem("$25");
-		JMenuItem hundredChip = new JMenuItem("$100");
+		oneChip = new JMenuItem("$1");
+		fiveChip = new JMenuItem("$5");
+		tenChip = new JMenuItem("$10");
+		twentyFiveChip = new JMenuItem("$25");
+		hundredChip = new JMenuItem("$100");
 		betMenu.add(oneChip);
 		betMenu.add(fiveChip);
 		betMenu.add(tenChip);
@@ -67,21 +92,22 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		menuBar.add(betMenu);
 
 		JMenu windowMenu = new JMenu("Window");
-		JMenuItem windowTableColourMenu = new JMenuItem("Change Table Colour");
+		windowTableColourMenu = new JMenuItem("Change Table Colour");
 		windowMenu.add(windowTableColourMenu);
 		menuBar.add(windowMenu);
 
 		JMenu helpMenu = new JMenu("Help");
-		JMenuItem helpBlackjackRulesMenu = new JMenuItem("Blackjack Rules");
-		JMenuItem helpAboutMenu = new JMenuItem("About Blackjack");
+		helpBlackjackRulesMenu = new JMenuItem("Blackjack Rules");
+		helpAboutMenu = new JMenuItem("About Blackjack");
 		helpMenu.add(helpBlackjackRulesMenu);
 		helpMenu.addSeparator();
 		helpMenu.add(helpAboutMenu);
 		menuBar.add(helpMenu);
 
 		setJMenuBar(menuBar);
+	}
 
-		// keyboard shortcuts
+	private void setupKeyboardShortcuts() {
 		updatePlayerDetails.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_U));
 		savePlayer.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_S));
 		openPlayer.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_O));
@@ -94,8 +120,9 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		tenChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_3));
 		twentyFiveChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_4));
 		hundredChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_5));
+	}
 
-		// action listeners
+	private void setupActionListeners() {
 		dealAction.addActionListener(this);
 		hitAction.addActionListener(this);
 		doubleAction.addActionListener(this);
@@ -110,12 +137,12 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		tenChip.addActionListener(this);
 		twentyFiveChip.addActionListener(this);
 		hundredChip.addActionListener(this);
+	}
 
+	private void initializeComponents() {
 		gamePanel = new GamePanel();
 		gamePanel.setBackground(defaultTableColour);
 		add(gamePanel);
-
-		setVisible(true);
 	}
 
 	public KeyStroke createShortCut(int keyEvent) {

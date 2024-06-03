@@ -26,6 +26,8 @@ public class GameTable extends JPanel {
 	private String dealerName;
 	private String playerName;
 
+	private Color playerNameColor = Color.WHITE;
+
 	private Image[] cardImages = new Image[CardPack.CARDS_IN_PACK + 1];
 
 	// take game model as parameter so that it can get cards and draw them
@@ -73,6 +75,11 @@ public class GameTable extends JPanel {
 		this.playerName = playerName;
 	}
 
+	public void setPlayerNameColor(Color color) {
+		this.playerNameColor = color;
+		repaint();
+	}
+
 	public void update(DealerCardHand dealer, PlayerCardHand player, boolean showDealer) {
 		this.dealer = dealer;
 		this.player = player;
@@ -85,8 +92,7 @@ public class GameTable extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		g.setColor(Color.WHITE);
-
+		g.setColor(playerNameColor);
 		g.setFont(playerNameFont);
 
 		g.drawString(dealerName, CARD_START, DEALER_POSITION - NAME_SPACE);

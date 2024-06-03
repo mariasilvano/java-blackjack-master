@@ -152,8 +152,15 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 
 	public void updateValues() {
-		dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">"
-				+ dealer.says() + "</font></p></html>");
+		Color colorText;
+
+		if (this.getBackground().equals(Color.BLACK)) {
+			colorText = Color.WHITE;
+			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
+		} else {
+			colorText = Color.BLACK;
+			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"black\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
+		}
 
 		doubleButton.setEnabled(!dealer.isGameOver() && dealer.canPlayerDouble(player));
 		newGameButton.setEnabled(dealer.isGameOver() && player.betPlaced() && !player.isBankrupt());
@@ -170,10 +177,11 @@ public class GamePanel extends JPanel implements ActionListener {
 		// redraw cards and totals
 		table.update(dealer.getHand(), player.getHand(), dealer.areCardsFaceUp());
 		table.setNames(dealer.getName(), player.getName());
+		table.setPlayerNameColor(colorText);
 		table.repaint();
 
-		cardsLeft.setText(
-				"Deck: " + dealer.cardsLeftInPack() + "/" + (dealer.CARD_PACKS * Cards.CardPack.CARDS_IN_PACK));
+		cardsLeft.setText("Deck: " + dealer.cardsLeftInPack() + "/" + (dealer.CARD_PACKS * Cards.CardPack.CARDS_IN_PACK));
+		cardsLeft.setForeground(colorText);
 
 		if (player.isBankrupt()) {
 			moreFunds();
@@ -182,6 +190,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		// redraw bet
 		currentBet.setText(Double.toString(player.getBet()));
 		playerWallet.setText(Double.toString(player.getWallet()));
+		currentBet.setForeground(colorText);
+		playerWallet.setForeground(colorText);
 	}
 
 	private void moreFunds() {

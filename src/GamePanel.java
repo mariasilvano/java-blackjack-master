@@ -101,7 +101,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		updateValues();
 	}
-
+	@Override
 	public void actionPerformed(ActionEvent evt) {
 		String act = evt.getActionCommand();
 
@@ -113,6 +113,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			playDouble();
 		} else if (act.equals("Stand")) {
 			stand();
+			resetGamePanel();
 		} else if (isBetEvent(act)) {
 			increaseBet(Integer.parseInt(act));
 		} else if (act.equals("Clear")) {
@@ -149,6 +150,13 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void clearBet() {
 		player.clearBet();
+	}
+
+	public void resetGamePanel() {
+		currentBet.setText("");
+		playerWallet.setText("");
+		cardsLeft.setText("");
+		dealerSays.setText("");
 	}
 
 	public void updateValues() {

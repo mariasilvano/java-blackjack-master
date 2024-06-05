@@ -1,11 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
 import java.io.*;
-
 import Players.*;
 import Cards.*;
 
@@ -95,11 +92,32 @@ public class GamePanel extends JPanel implements ActionListener {
 		add25Chip.setToolTipText("Add a $25 chip to your current bet.");
 		add100Chip.setToolTipText("Add a $100 chip to your current bet.");
 
+		// Custom button styles
+		customizeButton(newGameButton, Color.GREEN, Color.WHITE);
+		customizeButton(hitButton, Color.BLUE, Color.WHITE);
+		customizeButton(doubleButton, Color.ORANGE, Color.WHITE);
+		customizeButton(standButton, Color.RED, Color.WHITE);
+		customizeButton(clearBet, Color.GRAY, Color.WHITE);
+		customizeButton(add1Chip, Color.LIGHT_GRAY, Color.BLACK);
+		customizeButton(add5Chip, Color.LIGHT_GRAY, Color.BLACK);
+		customizeButton(add10Chip, Color.LIGHT_GRAY, Color.BLACK);
+		customizeButton(add25Chip, Color.LIGHT_GRAY, Color.BLACK);
+		customizeButton(add100Chip, Color.LIGHT_GRAY, Color.BLACK);
+
 		dealer = new Dealer();
 		player = new Player("James Bond", 32, "Male");
 		player.setWallet(100.00);
 
 		updateValues();
+	}
+
+	private void customizeButton(JButton button, Color backgroundColor, Color textColor) {
+		button.setBackground(backgroundColor);
+		button.setForeground(textColor);
+		button.setOpaque(true);
+		button.setBorderPainted(false);
+		button.setFocusPainted(false);
+		button.setFont(new Font("Arial", Font.BOLD, 14));
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -129,18 +147,27 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void newGame() {
 		dealer.deal(player);
+		table.setGameOver(false);
+		updateValues();
+		checkGameOver();
 	}
 
 	public void hit() {
 		dealer.hit(player);
+		updateValues();
+		checkGameOver();
 	}
 
 	public void playDouble() {
 		dealer.playDouble(player);
+		updateValues();
+		checkGameOver();
 	}
 
 	public void stand() {
 		dealer.stand(player);
+		updateValues();
+		checkGameOver();
 	}
 
 	public void increaseBet(int amount) {
@@ -159,7 +186,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
 		} else {
 			colorText = Color.BLACK;
-			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"black\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
+			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"black\" style=\"font-size: 20pt\">" + dealer.says() + "</font></html>");
 		}
 
 		doubleButton.setEnabled(!dealer.isGameOver() && dealer.canPlayerDouble(player));
@@ -264,5 +291,20 @@ public class GamePanel extends JPanel implements ActionListener {
 		playerDetails.setVisible(true);
 
 		player = playerDetails.getPlayer();
+	}
+
+	private void checkGameOver() {
+		if (dealer.isGameOver()) {
+			String message;
+			if (player.getHand().getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.getHand().getTotal())) {
+				message = "Você perdeu! A partida finalizou.";
+			} else if (dealer.getHand().getTotal() > 21 || player.getHand().getTotal() > dealer.getHand().getTotal()) {
+				message = "Você ganhou! A partida finalizou.";
+			} else {
+				message = "Empate! A partida finalizou.";
+			}
+			JOptionPane.showMessageDialog(this, message);
+			table.setGameOver(true);
+		}
 	}
 }

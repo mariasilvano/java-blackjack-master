@@ -58,7 +58,7 @@ public class SpringUtilities {
 
 		applyNewWidthHeigth(parent, layout, maxWidthSpring, maxHeightSpring, max);
 
-		pringLayout.Constraints lastCons = ajustXY(parent, layout, maxWidthSpring, maxHeightSpring, max, cols,
+		SpringLayout.Constraints lastCons = ajustXY(parent, layout, maxWidthSpring, maxHeightSpring, max, cols,
 				initialXSpring, initialYSpring, xPadSpring, yPadSpring);
 		// Set the parent's size.
 		SpringLayout.Constraints pCons = layout.getConstraints(parent);
@@ -68,8 +68,7 @@ public class SpringUtilities {
 				Spring.sum(Spring.constant(xPad), lastCons.getConstraint(SpringLayout.EAST)));
 	}
 
-	private void calculateSprings(Container parent, SpringLayout layout, Spring maxWidthSpring, Spring maxHeightSpring,
-			int max) {
+	private static void calculateSprings(Container parent, SpringLayout layout, Spring maxWidthSpring, Spring maxHeightSpring, int max) {
 		for (int i = 1; i < max; i++) {
 			SpringLayout.Constraints cons = layout.getConstraints(parent.getComponent(i));
 
@@ -78,8 +77,7 @@ public class SpringUtilities {
 		}
 	}
 
-	private void applyNewWidthHeigth(Container parent, SpringLayout layout, Spring maxWidthSpring,
-			Spring maxHeightSpring, int max) {
+	private static void applyNewWidthHeigth(Container parent, SpringLayout layout, Spring maxWidthSpring, Spring maxHeightSpring, int max) {
 		// Apply the new width/height Spring. This forces all the
 		// components to have the same size.
 		for (int i = 0; i < max; i++) {
@@ -90,9 +88,7 @@ public class SpringUtilities {
 		}
 	}
 
-	private SpringLayout.Constraints ajustXY(Container parent, SpringLayout layout, Spring maxWidthSpring,
-			Spring maxHeightSpring, int max, int cols, Spring initialXSpring, Spring initialYSpring, Spring xPadSpring,
-			Spring yPadSpring) {
+	private static SpringLayout.Constraints ajustXY(Container parent, SpringLayout layout, Spring maxWidthSpring, Spring maxHeightSpring, int max, int cols, Spring initialXSpring, Spring initialYSpring, Spring xPadSpring, Spring yPadSpring) {
 		// Then adjust the x/y constraints of all the cells so that they
 		// are aligned in a grid.
 		SpringLayout.Constraints lastCons = null;
@@ -136,8 +132,7 @@ public class SpringUtilities {
 	 * @param xPad     x padding between cells
 	 * @param yPad     y padding between cells
 	 */
-	public static void makeCompactGrid(Container parent, int rows, int cols, int initialX, int initialY, int xPad,
-			int yPad) {
+	public static void makeCompactGrid(Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
 		SpringLayout layout;
 		try {
 			layout = (SpringLayout) parent.getLayout();

@@ -1,6 +1,7 @@
 package Players;
 
 import Cards.*;
+import java.util.ArrayList;
 
 /**
  * Class representing the Dealer of a Blackjack game. Dealer must stand on 17 or
@@ -83,39 +84,39 @@ public class Dealer extends BlackjackPlayer {
 	}
 
 	/**
-	 * Deals initial two cards to player and self.
-	 * 
-	 * @param player The player to deal cards to.
+	 * Deals initial two cards to each player and self.
+	 *
+	 * @param players The players to deal cards to.
 	 *
 	 * @return True if cards were dealt, otherwise false.
 	 */
-	public void deal(Player player) {
-		if (player.betPlaced() && !player.isBankrupt()) {
-			gameOver = false;
-			cardsFaceUp = false;
+	public void deal(ArrayList<Player> players) {
+		gameOver = false;
+		cardsFaceUp = false;
 
-			playerCanDouble = true;
+		playerCanDouble = true;
 
+		hand = new DealerCardHand();
+
+		say("Initial deal made.");
+
+		for (Player player : players) {
 			player.hand = new PlayerCardHand();
-			hand = new DealerCardHand();
-
-			say("Initial deal made.");
-
 			player.hand.add(deck.deal());
-			this.hand.add(deck.deal());
-
 			player.hand.add(deck.deal());
-			this.hand.add(deck.deal());
+		}
 
-			firstDeal = false;
+		this.hand.add(deck.deal());
+		this.hand.add(deck.deal());
 
+		firstDeal = false;
+
+		for (Player player : players) {
 			if (player.hand.hasBlackjack()) {
-				say("Blackjack!");
-				go(player);
+				say(player.getName() + " has Blackjack!");
+				go(players);
+				break;
 			}
-		} else if (!player.betPlaced()) {
-			say("Please place your bets.");
-			gameOver = true;
 		}
 	}
 
@@ -127,7 +128,7 @@ public class Dealer extends BlackjackPlayer {
 	public void hit(Player player) {
 		Card newCard = deck.deal();
 		player.hand.add(newCard);
-		if(!player.betPlaced()) {
+		if (!player.betPlaced()) {
 			deck.returnCard(newCard);
 			say("First place your bet.");
 			return;
@@ -148,7 +149,7 @@ public class Dealer extends BlackjackPlayer {
 	 *
 	 * @param player The player requesting to play double.
 	 */
-	public void playDouble(Player player) {
+	public void playDouble(Player player, ArrayList<Player> players) {
 		if (player.doubleBet() && playerCanDouble) {
 			player.hand.add(deck.deal());
 			say(player.getName() + " plays double.");
@@ -157,7 +158,7 @@ public class Dealer extends BlackjackPlayer {
 				player.loses();
 				gameOver = true;
 			} else {
-				go(player);
+				go(players);
 			}
 		} else {
 			say(player.getName() + ", you can't double. Not enough money.");
@@ -169,17 +170,17 @@ public class Dealer extends BlackjackPlayer {
 	 *
 	 * @param player The player who wishes to stand.
 	 */
-	public void stand(Player player) {
+	public void stand(Player player, ArrayList<Player> players) {
 		say(player.getName() + " stands. " + this.getName() + " turn.");
-		go(player);
+		go(players);
 	}
 
 	/**
 	 * The dealers turn.
 	 *
-	 * @param player The opposing player of the dealer.
+	 * @param players The opposing players of the dealer.
 	 */
-	private void go(Player player) {
+	private void go(ArrayList<Player> players) {
 		cardsFaceUp = true;
 
 		if (!hand.hasBlackjack()) {
@@ -188,28 +189,30 @@ public class Dealer extends BlackjackPlayer {
 			say(this.getName() + " has BLACKJACK!");
 		}
 
-		if (hand.hasBlackjack() && player.hand.hasBlackjack()) {
-			say("Push");
-			player.clearBet();
-		} else if (player.hand.hasBlackjack()) {
-			double winnings = (player.getBet() * 3) / 2;
-			say(player.getName() + " wins with Blackjack $" + winnings);
-			player.wins(player.getBet() + winnings);
-		} else if (hand.hasBlackjack()) {
-			say("Dealer has Blackjack. " + player.getName() + " loses $" + player.getBet());
-			player.loses();
-		} else if (hand.isBust()) {
-			say("Dealer is bust. " + player.getName() + " wins $" + player.getBet());
-			player.wins(player.getBet() * 2);
-		} else if (player.hand.getTotal() == hand.getTotal()) {
-			say("Push");
-			player.clearBet();
-		} else if (player.hand.getTotal() < hand.getTotal()) {
-			say(player.getName() + " loses $" + player.getBet());
-			player.loses();
-		} else if (player.hand.getTotal() > hand.getTotal()) {
-			say(player.getName() + " wins $" + player.getBet());
-			player.wins(player.getBet() * 2);
+		for (Player player : players) {
+			if (hand.hasBlackjack() && player.hand.hasBlackjack()) {
+				say("Push");
+				player.clearBet();
+			} else if (player.hand.hasBlackjack()) {
+				double winnings = (player.getBet() * 3) / 2;
+				say(player.getName() + " wins with Blackjack $" + winnings);
+				player.wins(player.getBet() + winnings);
+			} else if (hand.hasBlackjack()) {
+				say("Dealer has Blackjack. " + player.getName() + " loses $" + player.getBet());
+				player.loses();
+			} else if (hand.isBust()) {
+				say("Dealer is bust. " + player.getName() + " wins $" + player.getBet());
+				player.wins(player.getBet() * 2);
+			} else if (player.hand.getTotal() == hand.getTotal()) {
+				say("Push");
+				player.clearBet();
+			} else if (player.hand.getTotal() < hand.getTotal()) {
+				say(player.getName() + " loses $" + player.getBet());
+				player.loses();
+			} else if (player.hand.getTotal() > hand.getTotal()) {
+				say(player.getName() + " wins $" + player.getBet());
+				player.wins(player.getBet() * 2);
+			}
 		}
 
 		gameOver = true;

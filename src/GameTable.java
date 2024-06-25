@@ -3,216 +3,240 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import Cards.*;
+import java.util.ArrayList;
 
 public class GameTable extends JPanel {
-	private DealerCardHand dealer;
-	private PlayerCardHand player;
-	private boolean showAllDealerCards;
-	private boolean gameOver;
+    private DealerCardHand dealer;
+    private ArrayList<PlayerCardHand> players;
+    private boolean showAllDealerCards;
+    private boolean gameOver;
 
-	// drawing position vars
-	private final int CARD_INCREMENT = 20;
-	private final int CARD_START = 100;
-	private final int DEALER_POSITION = 50;
-	private final int PLAYER_POSITION = 200;
+    // drawing position vars
+    private final int CARD_INCREMENT = 20;
+    private final int INITIAL_CARD_POSITION = 100;
+    private final int DEALER_POSITION = 50;
 
-	private final int CARD_IMAGE_WIDTH = 71;
-	private final int CARD_IMAGE_HEIGHT = 96;
+    private final int CARD_IMAGE_WIDTH = 71;
+    private final int CARD_IMAGE_HEIGHT = 96;
 
-	private final int NAME_SPACE = 10;
+    private final int NAME_SPACE = 10;
 
-	private Font handTotalFont;
-	private Font playerNameFont;
+    private Font handTotalFont;
+    private Font playerNameFont;
 
-	private String dealerName;
-	private String playerName;
+    private String dealerName;
+    private ArrayList<String> playerNames;
 
-	private Color playerNameColor = Color.WHITE;
+    private Color playerNameColor = Color.WHITE;
 
-	private Image[] cardImages = new Image[CardPack.CARDS_IN_PACK + 1];
-	private Image backgroundImg;
+    private Image[] cardImages = new Image[CardPack.CARDS_IN_PACK + 1];
+    private Image backgroundImg;
 
-	// Variables for animation
-	private int cardX = CARD_START;
-	private Timer timer;
-	private boolean animating = false;
-	private int animationStep = 5;
-	private int cardIndex = 0;
+    // Variables for animation
+    private int cardX = INITIAL_CARD_POSITION;
+    private Timer timer;
+    private boolean animating = false;
+    private int animationStep = 5;
+    private int cardIndex = 0;
 
-	// take game model as parameter so that it can get cards and draw them
-	public GameTable() {
-		super();
-		this.setBackground(Color.BLUE);
-		this.setOpaque(false);
-		handTotalFont = new Font("Serif", Font.PLAIN, 96);
-		playerNameFont = new Font("Serif", Font.ITALIC, 20);
-		showAllDealerCards = true;
-		gameOver = false;
+    // take game model as parameter so that it can get cards and draw them
+    public GameTable() {
+        super();
+        this.setBackground(Color.GREEN);
+        this.setOpaque(false);
+        handTotalFont = new Font("Serif", Font.PLAIN, 96);
+        playerNameFont = new Font("Serif", Font.ITALIC, 20);
+        showAllDealerCards = true;
+        gameOver = false;
 
-		for (int i = 0; i < CardPack.CARDS_IN_PACK; i++) {
-			String cardName = "/card_images/" + (i + 1) + ".png";
-			URL urlImg = getClass().getResource(cardName);
-			if (urlImg == null) {
-				System.err.println("Imagem não encontrada: " + cardName);
-				continue;
-			}
-			Image cardImage = Toolkit.getDefaultToolkit().getImage(urlImg);
-			cardImages[i] = cardImage;
-		}
+        players = new ArrayList<>();
+        playerNames = new ArrayList<>();
 
-		String backCard = "/card_images/red_back.png";
-		URL backCardURL = getClass().getResource(backCard);
-		if (backCardURL == null) {
-			System.err.println("Imagem não encontrada: " + backCard);
-		} else {
-			Image backCardImage = Toolkit.getDefaultToolkit().getImage(backCardURL);
-			cardImages[CardPack.CARDS_IN_PACK] = backCardImage;
-		}
+        for (int i = 0; i < CardPack.CARDS_IN_PACK; i++) {
+            String cardName = "/card_images/" + (i + 1) + ".png";
+            URL urlImg = getClass().getResource(cardName);
+            if (urlImg == null) {
+                System.err.println("Imagem não encontrada: " + cardName);
+                continue;
+            }
+            Image cardImage = Toolkit.getDefaultToolkit().getImage(urlImg);
+            cardImages[i] = cardImage;
+        }
 
-		MediaTracker imageTracker = new MediaTracker(this);
-		for (int i = 0; i < CardPack.CARDS_IN_PACK + 1; i++) {
-			if (cardImages[i] != null) {
-				imageTracker.addImage(cardImages[i], i);
-			}
-		}
+        String backCard = "/card_images/red_back.png";
+        URL backCardURL = getClass().getResource(backCard);
+        if (backCardURL == null) {
+            System.err.println("Imagem não encontrada: " + backCard);
+        } else {
+            Image backCardImage = Toolkit.getDefaultToolkit().getImage(backCardURL);
+            cardImages[CardPack.CARDS_IN_PACK] = backCardImage;
+        }
 
-		// Load background image
-		String backgroundName = "/images/background.png";
-		URL backgroundURL = getClass().getResource(backgroundName);
-		if (backgroundURL == null) {
-			System.err.println("Imagem não encontrada: " + backgroundName);
-		} else {
-			backgroundImg = Toolkit.getDefaultToolkit().getImage(backgroundURL);
-			imageTracker.addImage(backgroundImg, CardPack.CARDS_IN_PACK + 1);
-		}
+        MediaTracker imageTracker = new MediaTracker(this);
+        for (int i = 0; i < CardPack.CARDS_IN_PACK + 1; i++) {
+            if (cardImages[i] != null) {
+                imageTracker.addImage(cardImages[i], i);
+            }
+        }
 
-		try {
-			imageTracker.waitForAll();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+        // Load background image
+        String backgroundName = "/images/background.png";
+        URL backgroundURL = getClass().getResource(backgroundName);
+        if (backgroundURL == null) {
+            System.err.println("Imagem não encontrada: " + backgroundName);
+        } else {
+            backgroundImg = Toolkit.getDefaultToolkit().getImage(backgroundURL);
+            imageTracker.addImage(backgroundImg, CardPack.CARDS_IN_PACK + 1);
+        }
 
-		// Timer for animation
-		timer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cardX += animationStep;
-				if (cardX >= CARD_START + CARD_INCREMENT * cardIndex) {
-					animating = false;
-					timer.stop();
-				}
-				repaint();
-			}
-		});
+        try {
+            imageTracker.waitForAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-		// Adding MouseListener for interactivity
-		this.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
+        // Timer for animation
+        timer = new Timer(10, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardX += animationStep;
+                if (cardX >= INITIAL_CARD_POSITION + CARD_INCREMENT * cardIndex) {
+                    animating = false;
+                    timer.stop();
+                }
+                repaint();
+            }
+        });
 
-				// Check if a card is clicked
-				if (!gameOver && y >= PLAYER_POSITION && y <= PLAYER_POSITION + CARD_IMAGE_HEIGHT) {
-					int index = (x - CARD_START) / CARD_INCREMENT;
-					if (index >= 0 && index < player.size()) {
-						Card clickedCard = player.get(index);
-						JOptionPane.showMessageDialog(null, "You clicked on: " + clickedCard);
-					}
-				}
-			}
-		});
-	}
+        // Adding MouseListener for interactivity
+        this.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
 
-	public void setHands(DealerCardHand dealer, PlayerCardHand player) {
-		this.dealer = dealer;
-		this.player = player;
-		this.cardIndex = 0;
-		this.cardX = CARD_START;
-		animating = true;
-		timer.start();
-	}
+                // Check if a card is clicked
+                if (!gameOver && y >= getPlayerPositionY(0) && y <= getPlayerPositionY(0) + CARD_IMAGE_HEIGHT) {
+                    int index = (x - INITIAL_CARD_POSITION) / CARD_INCREMENT;
+                    if (index >= 0 && index < players.get(0).size()) {
+                        Card clickedCard = players.get(0).get(index);
+                        JOptionPane.showMessageDialog(null, "You clicked on: " + clickedCard);
+                    }
+                }
+            }
+        });
+    }
 
-	public void setShowAllDealerCards(boolean showAllDealerCards) {
-		this.showAllDealerCards = showAllDealerCards;
-	}
+    private int getPlayerPositionY(int playerIndex) {
+        return getHeight() - 150;
+    }
 
-	public void setNames(String dealerName, String playerName) {
-		this.dealerName = dealerName;
-		this.playerName = playerName;
-	}
+    public void setHands(DealerCardHand dealer, ArrayList<PlayerCardHand> players) {
+        this.dealer = dealer;
+        this.players = players;
+        this.cardIndex = 0;
+        this.cardX = INITIAL_CARD_POSITION;
+        animating = true;
+        timer.start();
+    }
 
-	public void setPlayerNameColor(Color color) {
-		this.playerNameColor = color;
-	}
+    public void setShowAllDealerCards(boolean showAllDealerCards) {
+        this.showAllDealerCards = showAllDealerCards;
+    }
 
-	public void setGameOver(boolean gameOver) {
-		this.gameOver = gameOver;
-		repaint();
-	}
+    public void setNames(String dealerName, ArrayList<String> playerNames) {
+        this.dealerName = dealerName;
+        this.playerNames = playerNames;
+    }
 
-	public void update(DealerCardHand dealer, PlayerCardHand player, boolean showAllDealerCards) {
-		setHands(dealer, player);
-		setShowAllDealerCards(showAllDealerCards);
-		repaint();
-	}
+    public void setPlayerNameColor(Color color) {
+        this.playerNameColor = color;
+    }
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+        repaint();
+    }
 
-		if (backgroundImg != null) {
-			g.drawImage(backgroundImg, 0, 0, getWidth(), getHeight(), this);
-		}
+    public void startCardAnimation(int index) {
+        cardIndex = index;
+        cardX = INITIAL_CARD_POSITION;
+        animating = true;
+        timer.start();
+    }
 
-		if (gameOver) {
-			return;
-		}
+    public void update(DealerCardHand dealer, ArrayList<PlayerCardHand> players, boolean showAllDealerCards) {
+        setHands(dealer, players);
+        setShowAllDealerCards(showAllDealerCards);
+        repaint();
+    }
 
-		g.setColor(playerNameColor);
-		g.setFont(playerNameFont);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
-		g.drawString(dealerName, CARD_START, DEALER_POSITION - NAME_SPACE);
-		g.drawString(playerName, CARD_START, PLAYER_POSITION - NAME_SPACE);
+        if (backgroundImg != null) {
+            g.drawImage(backgroundImg, 0, 0, getWidth(), getHeight(), this);
+        }
 
-		g.setFont(handTotalFont);
+        g.setColor(playerNameColor);
+        g.setFont(playerNameFont);
 
-		// draw dealer cards
-		int i = CARD_START;
+        g.drawString(dealerName, getWidth() / 2 - dealerName.length() * 5, DEALER_POSITION - NAME_SPACE);
 
-		if (showAllDealerCards) {
-			for (Card aCard : dealer) {
-				g.drawImage(cardImages[aCard.getCode() - 1], i, DEALER_POSITION, this);
-				i += CARD_INCREMENT;
-			}
-			g.drawString(Integer.toString(dealer.getTotal()), i + CARD_IMAGE_WIDTH + CARD_INCREMENT, DEALER_POSITION + CARD_IMAGE_HEIGHT);
-		} else {
-			for (Card aCard : dealer) {
-				g.drawImage(cardImages[CardPack.CARDS_IN_PACK], i, DEALER_POSITION, this);
-				i += CARD_INCREMENT;
-			}
-			try {
-				Card topCard = dealer.lastElement();
-				i -= CARD_INCREMENT;
-				g.drawImage(cardImages[topCard.getCode() - 1], i, DEALER_POSITION, this);
-				g.drawString("?", i + CARD_IMAGE_WIDTH + CARD_INCREMENT, DEALER_POSITION + CARD_IMAGE_HEIGHT);
-			} catch (Exception e) {
-				System.out.println("No cards have been dealt yet.");
-			}
-		}
+        if (playerNames.size() > 0) {
+            int leftPlayerX = 50;
+            int rightPlayerX = getWidth() - 150;
+            int playerY = getPlayerPositionY(0);
 
-		// draw player cards
-		i = CARD_START;
-		if (animating) {
-			for (int j = 0; j < player.size(); j++) {
-				if (i <= cardX) {
-					g.drawImage(cardImages[player.get(j).getCode() - 1], i, PLAYER_POSITION, this);
-					i += CARD_INCREMENT;
-				}
-			}
-		} else {
-			for (Card aCard : player) {
-				g.drawImage(cardImages[aCard.getCode() - 1], i, PLAYER_POSITION, this);
-				i += CARD_INCREMENT;
-			}
-			g.drawString(Integer.toString(player.getTotal()), i + CARD_IMAGE_WIDTH + CARD_INCREMENT, PLAYER_POSITION + CARD_IMAGE_HEIGHT);
-		}
-	}
+            g.drawString(playerNames.get(0), leftPlayerX, playerY - NAME_SPACE);
+            g.drawString(Integer.toString(players.get(0).getTotal()), leftPlayerX + 20, playerY + CARD_IMAGE_HEIGHT + 20);
+
+            if (playerNames.size() > 1) {
+                g.drawString(playerNames.get(1), rightPlayerX, playerY - NAME_SPACE);
+                g.drawString(Integer.toString(players.get(1).getTotal()), rightPlayerX + 20, playerY + CARD_IMAGE_HEIGHT + 20);
+            }
+
+            if (gameOver) {
+                return;
+            }
+
+            g.setFont(handTotalFont);
+
+            // draw dealer cards
+            int dealerStartX = (getWidth() - (CARD_IMAGE_WIDTH + CARD_INCREMENT) * dealer.size()) / 2;
+            if (showAllDealerCards) {
+                for (Card aCard : dealer) {
+                    g.drawImage(cardImages[aCard.getCode() - 1], dealerStartX, DEALER_POSITION, this);
+                    dealerStartX += CARD_INCREMENT;
+                }
+                g.drawString(Integer.toString(dealer.getTotal()), dealerStartX + CARD_IMAGE_WIDTH + CARD_INCREMENT, DEALER_POSITION + CARD_IMAGE_HEIGHT);
+            } else {
+                for (Card aCard : dealer) {
+                    g.drawImage(cardImages[CardPack.CARDS_IN_PACK], dealerStartX, DEALER_POSITION, this);
+                    dealerStartX += CARD_INCREMENT;
+                }
+                try {
+                    Card topCard = dealer.lastElement();
+                    dealerStartX -= CARD_INCREMENT;
+                    g.drawImage(cardImages[topCard.getCode() - 1], dealerStartX, DEALER_POSITION, this);
+                    g.drawString("?", dealerStartX + CARD_IMAGE_WIDTH + CARD_INCREMENT, DEALER_POSITION + CARD_IMAGE_HEIGHT);
+                } catch (Exception e) {
+                    System.out.println("No cards have been dealt yet.");
+                }
+            }
+
+            // draw player cards
+            int playerStartX = leftPlayerX;
+            for (Card aCard : players.get(0)) {
+                g.drawImage(cardImages[aCard.getCode() - 1], playerStartX, playerY, this);
+                playerStartX += CARD_INCREMENT;
+            }
+
+            playerStartX = rightPlayerX;
+            if (players.size() > 1) {
+                for (Card aCard : players.get(1)) {
+                    g.drawImage(cardImages[aCard.getCode() - 1], playerStartX, playerY, this);
+                    playerStartX += CARD_INCREMENT;
+                }
+            }
+        }
+    }
 }

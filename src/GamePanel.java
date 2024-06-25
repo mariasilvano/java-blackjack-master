@@ -3,225 +3,325 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.util.ArrayList;
 import Players.*;
 import Cards.*;
 
 public class GamePanel extends JPanel implements ActionListener {
 	private Dealer dealer;
-	private Player player;
+	private ArrayList<Player> players;
+	private int currentPlayerIndex;
 
 	private GameTable table;
 
-	private JButton newGameButton = new JButton("Deal");
-	private JButton hitButton = new JButton("Hit");
-	private JButton doubleButton = new JButton("Double");
-	private JButton standButton = new JButton("Stand");
-	private JButton add1Chip = new JButton("1");
-	private JButton add5Chip = new JButton("5");
-	private JButton add10Chip = new JButton("10");
-	private JButton add25Chip = new JButton("25");
-	private JButton add100Chip = new JButton("100");
-	private JButton clearBet = new JButton("Clear");
+	private ArrayList<JButton> newGameButtons;
+	private ArrayList<JButton> hitButtons;
+	private ArrayList<JButton> doubleButtons;
+	private ArrayList<JButton> standButtons;
+	private ArrayList<JButton> add1ChipButtons;
+	private ArrayList<JButton> add5ChipButtons;
+	private ArrayList<JButton> add10ChipButtons;
+	private ArrayList<JButton> add25ChipButtons;
+	private ArrayList<JButton> add100ChipButtons;
+	private ArrayList<JButton> clearBetButtons;
 
-	private JLabel currentBet = new JLabel("Please set your bet...");
-	private JLabel playerWallet = new JLabel("$999.99");
+	private ArrayList<JLabel> currentBetLabels;
+	private ArrayList<JLabel> playerWalletLabels;
 	private JLabel cardsLeft = new JLabel("Cards left...");
 	private JLabel dealerSays = new JLabel("Dealer says...");
 
 	public GamePanel() {
 		this.setLayout(new BorderLayout());
+		this.setBackground(Color.BLACK);
 
 		table = new GameTable();
 		add(table, BorderLayout.CENTER);
 
-		JPanel betPanel = new JPanel();
-		betPanel.add(currentBet);
-		betPanel.add(clearBet);
-		betPanel.add(add1Chip);
-		betPanel.add(add5Chip);
-		betPanel.add(add10Chip);
-		betPanel.add(add25Chip);
-		betPanel.add(add100Chip);
-		betPanel.add(playerWallet);
-
-		JPanel dealerPanel = new JPanel();
-		dealerPanel.add(dealerSays);
-
-		JPanel optionsPanel = new JPanel();
-		optionsPanel.add(newGameButton);
-		optionsPanel.add(hitButton);
-		optionsPanel.add(doubleButton);
-		optionsPanel.add(standButton);
-		optionsPanel.add(cardsLeft);
-
-		JPanel bottomItems = new JPanel();
-		bottomItems.setLayout(new GridLayout(0, 1));
-		bottomItems.add(dealerPanel);
-		bottomItems.add(betPanel);
-		bottomItems.add(optionsPanel);
-		add(bottomItems, BorderLayout.SOUTH);
-
-		// opaque stuff
-		// this.setBackground(new Color(6, 120, 0)); // now done in AppWindow.java
-		betPanel.setOpaque(false);
-		dealerPanel.setOpaque(false);
-		optionsPanel.setOpaque(false);
-		bottomItems.setOpaque(false);
-
-		// add listeners to buttons
-		newGameButton.addActionListener(this);
-		hitButton.addActionListener(this);
-		doubleButton.addActionListener(this);
-		standButton.addActionListener(this);
-		clearBet.addActionListener(this);
-		add1Chip.addActionListener(this);
-		add5Chip.addActionListener(this);
-		add10Chip.addActionListener(this);
-		add25Chip.addActionListener(this);
-		add100Chip.addActionListener(this);
-
-		// tool tips
-		newGameButton.setToolTipText("Deal a new game.");
-		hitButton.setToolTipText("Request another card.");
-		doubleButton.setToolTipText("Double your bet, and receive another card.");
-		standButton.setToolTipText("Stand with your card-hand.");
-		clearBet.setToolTipText("Clear your current bet.");
-		add1Chip.setToolTipText("Add a $1 chip to your current bet.");
-		add5Chip.setToolTipText("Add a $5 chip to your current bet.");
-		add10Chip.setToolTipText("Add a $10 chip to your current bet.");
-		add25Chip.setToolTipText("Add a $25 chip to your current bet.");
-		add100Chip.setToolTipText("Add a $100 chip to your current bet.");
-
-		// Custom button styles
-		customizeButton(newGameButton, Color.GREEN, Color.WHITE);
-		customizeButton(hitButton, Color.BLUE, Color.WHITE);
-		customizeButton(doubleButton, Color.ORANGE, Color.WHITE);
-		customizeButton(standButton, Color.RED, Color.WHITE);
-		customizeButton(clearBet, Color.GRAY, Color.WHITE);
-		customizeButton(add1Chip, Color.LIGHT_GRAY, Color.BLACK);
-		customizeButton(add5Chip, Color.LIGHT_GRAY, Color.BLACK);
-		customizeButton(add10Chip, Color.LIGHT_GRAY, Color.BLACK);
-		customizeButton(add25Chip, Color.LIGHT_GRAY, Color.BLACK);
-		customizeButton(add100Chip, Color.LIGHT_GRAY, Color.BLACK);
+		// Inicialização das listas de controles
+		newGameButtons = new ArrayList<>();
+		hitButtons = new ArrayList<>();
+		doubleButtons = new ArrayList<>();
+		standButtons = new ArrayList<>();
+		add1ChipButtons = new ArrayList<>();
+		add5ChipButtons = new ArrayList<>();
+		add10ChipButtons = new ArrayList<>();
+		add25ChipButtons = new ArrayList<>();
+		add100ChipButtons = new ArrayList<>();
+		clearBetButtons = new ArrayList<>();
+		currentBetLabels = new ArrayList<>();
+		playerWalletLabels = new ArrayList<>();
 
 		dealer = new Dealer();
-		player = new Player("James Bond", 32, "Male");
-		player.setWallet(100.00);
+		players = new ArrayList<>();
+		players.add(new Player("James Bond", 32, "Male"));
+		players.add(new Player("Ethan Hunt", 35, "Male"));
+		for (Player player : players) {
+			player.setWallet(100.00);
+		}
+
+		currentPlayerIndex = 0;
+
+		// Painel de Dealer e cartas restantes
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BorderLayout());
+		topPanel.setBackground(Color.BLACK);
+		topPanel.add(dealerSays, BorderLayout.NORTH);
+		topPanel.add(cardsLeft, BorderLayout.SOUTH);
+		dealerSays.setForeground(Color.WHITE);
+		cardsLeft.setForeground(Color.WHITE);
+		add(topPanel, BorderLayout.NORTH);
+
+		// Criar painéis de controle individual para cada jogador na parte inferior
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new GridLayout(1, 2));
+		bottomPanel.setBackground(Color.DARK_GRAY);
+
+		JPanel leftPlayerPanel = new JPanel();
+		leftPlayerPanel.setLayout(new BorderLayout());
+		leftPlayerPanel.setBackground(Color.DARK_GRAY);
+
+		JPanel rightPlayerPanel = new JPanel();
+		rightPlayerPanel.setLayout(new BorderLayout());
+		rightPlayerPanel.setBackground(Color.DARK_GRAY);
+
+		for (int i = 0; i < players.size(); i++) {
+			JPanel playerPanel = new JPanel();
+			playerPanel.setLayout(new BorderLayout());
+			playerPanel.setBackground(Color.DARK_GRAY);
+
+			JPanel betPanel = new JPanel();
+			betPanel.setBackground(Color.DARK_GRAY);
+			JLabel currentBet = new JLabel("Please set your bet...");
+			currentBet.setForeground(Color.WHITE);
+			JLabel playerWallet = new JLabel("$999.99");
+			playerWallet.setForeground(Color.WHITE);
+			betPanel.add(currentBet);
+			betPanel.add(playerWallet);
+			betPanel.add(createChipButton("1", add1ChipButtons));
+			betPanel.add(createChipButton("5", add5ChipButtons));
+			betPanel.add(createChipButton("10", add10ChipButtons));
+			betPanel.add(createChipButton("25", add25ChipButtons));
+			betPanel.add(createChipButton("100", add100ChipButtons));
+			betPanel.add(createButton("Clear", clearBetButtons));
+			currentBetLabels.add(currentBet);
+			playerWalletLabels.add(playerWallet);
+
+			JPanel optionsPanel = new JPanel();
+			optionsPanel.setBackground(Color.DARK_GRAY);
+			optionsPanel.add(createButton("Deal", newGameButtons));
+			optionsPanel.add(createButton("Hit", hitButtons));
+			optionsPanel.add(createButton("Double", doubleButtons));
+			optionsPanel.add(createButton("Stand", standButtons));
+
+			playerPanel.add(betPanel, BorderLayout.NORTH);
+			playerPanel.add(optionsPanel, BorderLayout.SOUTH);
+
+			if (i == 0) {
+				leftPlayerPanel.add(playerPanel, BorderLayout.SOUTH);
+			} else {
+				rightPlayerPanel.add(playerPanel, BorderLayout.SOUTH);
+			}
+		}
+
+		bottomPanel.add(leftPlayerPanel);
+		bottomPanel.add(rightPlayerPanel);
+
+		add(bottomPanel, BorderLayout.SOUTH);
 
 		updateValues();
 	}
 
-	private void customizeButton(JButton button, Color backgroundColor, Color textColor) {
-		button.setBackground(backgroundColor);
-		button.setForeground(textColor);
-		button.setOpaque(true);
-		button.setBorderPainted(false);
-		button.setFocusPainted(false);
-		button.setFont(new Font("Arial", Font.BOLD, 14));
+	private JButton createButton(String text, ArrayList<JButton> buttonList) {
+		JButton button = new JButton(text);
+		button.addActionListener(this);
+
+		// Definindo cores diferentes para cada função
+		if (text.equals("Deal")) {
+			button.setBackground(Color.GREEN);
+		} else if (text.equals("Hit")) {
+			button.setBackground(Color.YELLOW);
+		} else if (text.equals("Double")) {
+			button.setBackground(Color.ORANGE);
+		} else if (text.equals("Stand")) {
+			button.setBackground(Color.RED);
+		} else {
+			button.setBackground(Color.GRAY);
+		}
+
+		button.setForeground(Color.BLACK);
+		buttonList.add(button);
+		return button;
+	}
+
+	private JButton createChipButton(String text, ArrayList<JButton> buttonList) {
+		JButton button = new JButton(text);
+		button.addActionListener(this);
+		button.setBackground(Color.GRAY);
+		button.setForeground(Color.BLACK);
+		button.setToolTipText("Add a $" + text + " chip to your current bet.");
+		buttonList.add(button);
+		return button;
 	}
 
 	public void actionPerformed(ActionEvent evt) {
 		String act = evt.getActionCommand();
+		Object source = evt.getSource();
+		int playerIndex = getPlayerIndex(source);
 
 		if (act.equals("Deal")) {
-			newGame();
+			if (!allPlayersHaveBet()) {
+				JOptionPane.showMessageDialog(this, "Todos os jogadores devem fazer uma aposta antes de começar o jogo.", "Aposta insuficiente", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			newGame(playerIndex);
 		} else if (act.equals("Hit")) {
-			hit();
+			hit(playerIndex);
 		} else if (act.equals("Double")) {
-			playDouble();
+			playDouble(playerIndex);
 		} else if (act.equals("Stand")) {
-			stand();
+			stand(playerIndex);
 		} else if (isBetEvent(act)) {
-			increaseBet(Integer.parseInt(act));
+			increaseBet(playerIndex, Integer.parseInt(act));
 		} else if (act.equals("Clear")) {
-			System.out.println("clear bet");
-			clearBet();
+			clearBet(playerIndex);
 		}
 
 		updateValues();
+	}
+
+	private int getPlayerIndex(Object source) {
+		for (int i = 0; i < players.size(); i++) {
+			if (newGameButtons.get(i) == source || hitButtons.get(i) == source || doubleButtons.get(i) == source || standButtons.get(i) == source || clearBetButtons.get(i) == source ||
+					add1ChipButtons.get(i) == source || add5ChipButtons.get(i) == source || add10ChipButtons.get(i) == source || add25ChipButtons.get(i) == source || add100ChipButtons.get(i) == source) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public boolean isBetEvent(String act) {
 		return act.equals("1") || act.equals("5") || act.equals("10") || act.equals("25") || act.equals("100");
 	}
 
-	public void newGame() {
-		dealer.deal(player);
+	public void newGame(int playerIndex) {
+		dealer.deal(players);
+		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
+		for (Player player : players) {
+			playerHands.add(player.getHand());
+		}
+		table.setHands(dealer.getHand(), playerHands);
+		ArrayList<String> playerNames = new ArrayList<>();
+		for (Player player : players) {
+			playerNames.add(player.getName());
+		}
+		table.setNames(dealer.getName(), playerNames);
 		table.setGameOver(false);
+		currentPlayerIndex = playerIndex;
+		table.startCardAnimation(players.get(currentPlayerIndex).getHand().size() - 1);
 		updateValues();
 		checkGameOver();
 	}
 
-	public void hit() {
-		dealer.hit(player);
+	private boolean allPlayersHaveBet() {
+		for (Player player : players) {
+			if (player.getBet() <= 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void hit(int playerIndex) {
+		dealer.hit(players.get(playerIndex));
+		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
+		for (Player player : players) {
+			playerHands.add(player.getHand());
+		}
+		table.setHands(dealer.getHand(), playerHands);
+		table.startCardAnimation(players.get(playerIndex).getHand().size() - 1);
 		updateValues();
 		checkGameOver();
 	}
 
-	public void playDouble() {
-		dealer.playDouble(player);
+	public void playDouble(int playerIndex) {
+		dealer.playDouble(players.get(playerIndex), players);
+		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
+		for (Player player : players) {
+			playerHands.add(player.getHand());
+		}
+		table.setHands(dealer.getHand(), playerHands);
+		table.startCardAnimation(players.get(playerIndex).getHand().size() - 1);
 		updateValues();
 		checkGameOver();
 	}
 
-	public void stand() {
-		dealer.stand(player);
+	public void stand(int playerIndex) {
+		dealer.stand(players.get(playerIndex), players);
+		currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
 		updateValues();
 		checkGameOver();
 	}
 
-	public void increaseBet(int amount) {
+	public void increaseBet(int playerIndex, int amount) {
+		Player player = players.get(playerIndex);
 		dealer.acceptBetFrom(player, amount + player.getBet());
 	}
 
-	public void clearBet() {
+	public void clearBet(int playerIndex) {
+		Player player = players.get(playerIndex);
 		player.clearBet();
 	}
 
 	public void updateValues() {
-		Color colorText;
+		Color colorText = Color.WHITE;
 
-		if (this.getBackground().equals(Color.BLACK)) {
-			colorText = Color.WHITE;
-			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
-		} else {
-			colorText = Color.BLACK;
-			dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"black\" style=\"font-size: 20pt\">" + dealer.says() + "</font></html>");
+		dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
+
+		for (int i = 0; i < players.size(); i++) {
+			Player player = players.get(i);
+			doubleButtons.get(i).setEnabled(!dealer.isGameOver() && dealer.canPlayerDouble(player));
+			newGameButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced() && !player.isBankrupt());
+			hitButtons.get(i).setEnabled(!dealer.isGameOver());
+			standButtons.get(i).setEnabled(!dealer.isGameOver());
+			clearBetButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced());
+			add1ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 1.0);
+			add5ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 5);
+			add10ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 10);
+			add25ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 25);
+			add100ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 100);
+
+			// redraw bet
+			currentBetLabels.get(i).setText(Double.toString(player.getBet()));
+			playerWalletLabels.get(i).setText(Double.toString(player.getWallet()));
+			currentBetLabels.get(i).setForeground(colorText);
+			playerWalletLabels.get(i).setForeground(colorText);
 		}
 
-		doubleButton.setEnabled(!dealer.isGameOver() && dealer.canPlayerDouble(player));
-		newGameButton.setEnabled(dealer.isGameOver() && player.betPlaced() && !player.isBankrupt());
-		hitButton.setEnabled(!dealer.isGameOver());
-		standButton.setEnabled(!dealer.isGameOver());
-
-		clearBet.setEnabled(dealer.isGameOver() && player.betPlaced());
-		add1Chip.setEnabled(dealer.isGameOver() && player.getWallet() >= 1.0);
-		add5Chip.setEnabled(dealer.isGameOver() && player.getWallet() >= 5);
-		add10Chip.setEnabled(dealer.isGameOver() && player.getWallet() >= 10);
-		add25Chip.setEnabled(dealer.isGameOver() && player.getWallet() >= 25);
-		add100Chip.setEnabled(dealer.isGameOver() && player.getWallet() >= 100);
-
 		// redraw cards and totals
-		table.update(dealer.getHand(), player.getHand(), dealer.areCardsFaceUp());
-		table.setNames(dealer.getName(), player.getName());
+		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
+		for (Player player : players) {
+			playerHands.add(player.getHand());
+		}
+		table.update(dealer.getHand(), playerHands, dealer.areCardsFaceUp());
+		ArrayList<String> playerNames = new ArrayList<>();
+		for (Player player : players) {
+			playerNames.add(player.getName());
+		}
+		table.setNames(dealer.getName(), playerNames);
 		table.setPlayerNameColor(colorText);
 		table.repaint();
 
 		cardsLeft.setText("Deck: " + dealer.cardsLeftInPack() + "/" + (dealer.CARD_PACKS * Cards.CardPack.CARDS_IN_PACK));
-		cardsLeft.setForeground(colorText);
+		cardsLeft.setForeground(Color.WHITE);
 
-		if (player.isBankrupt()) {
-			moreFunds();
+		for (Player player : players) {
+			if (player.isBankrupt()) {
+				moreFunds(player);
+			}
 		}
-
-		// redraw bet
-		currentBet.setText(Double.toString(player.getBet()));
-		playerWallet.setText(Double.toString(player.getWallet()));
-		currentBet.setForeground(colorText);
-		playerWallet.setForeground(colorText);
 	}
 
-	private void moreFunds() {
+	private void moreFunds(Player player) {
 		int response = JOptionPane.showConfirmDialog(null,
 				"Marshall Aid. One Hundred dollars. With the compliments of the USA.", "Out of funds",
 				JOptionPane.YES_NO_OPTION);
@@ -232,7 +332,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 
-	public void savePlayer() {
+	public void savePlayer(int playerIndex) {
+		Player player = players.get(playerIndex);
 		if (dealer.isGameOver()) {
 			JFileChooser playerSaveDialog = new JFileChooser("~");
 			SimpleFileFilter fileFilter = new SimpleFileFilter(".ser", "(.ser) Serialised Files");
@@ -257,7 +358,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	}
 
-	public void openPlayer() {
+	public void openPlayer(int playerIndex) {
+		Player player = players.get(playerIndex);
 		if (dealer.isGameOver()) {
 			JFileChooser playerOpenDialog = new JFileChooser("~");
 			SimpleFileFilter fileFilter = new SimpleFileFilter(".ser", "(.ser) Serialised Files");
@@ -271,7 +373,7 @@ public class GamePanel extends JPanel implements ActionListener {
 					ObjectInputStream playerIn = new ObjectInputStream(new FileInputStream(filePath));
 					Player openedPlayer = (Player) playerIn.readObject();
 					openedPlayer.hand = new PlayerCardHand();
-					player = openedPlayer;
+					players.set(playerIndex, openedPlayer);
 					playerIn.close();
 					System.out.println(openedPlayer.getName());
 				} catch (ClassNotFoundException e) {
@@ -286,25 +388,32 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 
-	public void updatePlayer() {
+	public void updatePlayer(int playerIndex) {
+		Player player = players.get(playerIndex);
 		PlayerDialog playerDetails = new PlayerDialog(null, "Player Details", true, player);
 		playerDetails.setVisible(true);
 
-		player = playerDetails.getPlayer();
+		players.set(playerIndex, playerDetails.getPlayer());
 	}
 
 	private void checkGameOver() {
 		if (dealer.isGameOver()) {
-			String message;
-			if (player.getHand().getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.getHand().getTotal())) {
-				message = "Você perdeu! A partida finalizou.";
-			} else if (dealer.getHand().getTotal() > 21 || player.getHand().getTotal() > dealer.getHand().getTotal()) {
-				message = "Você ganhou! A partida finalizou.";
-			} else {
-				message = "Empate! A partida finalizou.";
+			for (Player player : players) {
+				String message;
+				if (player.getHand().getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.getHand().getTotal())) {
+					message = player.getName() + " perdeu!";
+				} else if (dealer.getHand().getTotal() > 21 || player.getHand().getTotal() > dealer.getHand().getTotal()) {
+					message = player.getName() + " ganhou!";
+				} else {
+					message = player.getName() + " empatou!";
+				}
+				JOptionPane.showMessageDialog(this, message);
 			}
-			JOptionPane.showMessageDialog(this, message);
 			table.setGameOver(true);
+			for (int i = 0; i < players.size(); i++) {
+				players.get(i).clearHand();
+			}
+			updateValues();
 		}
 	}
 }

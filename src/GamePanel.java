@@ -110,7 +110,16 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		updateValues();
 	}
-  
+
+	private void customizeButton(JButton button, Color backgroundColor, Color textColor) {
+		button.setBackground(backgroundColor);
+		button.setForeground(textColor);
+		button.setOpaque(true);
+		button.setBorderPainted(false);
+		button.setFocusPainted(false);
+		button.setFont(new Font("Arial", Font.BOLD, 14));
+	}
+
 	public void actionPerformed(ActionEvent evt) {
 		String act = evt.getActionCommand();
 
@@ -122,7 +131,6 @@ public class GamePanel extends JPanel implements ActionListener {
 			playDouble();
 		} else if (act.equals("Stand")) {
 			stand();
-			resetGamePanel();
 		} else if (isBetEvent(act)) {
 			increaseBet(Integer.parseInt(act));
 		} else if (act.equals("Clear")) {
@@ -168,13 +176,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void clearBet() {
 		player.clearBet();
-	}
-
-	public void resetGamePanel() {
-		currentBet.setText("");
-		playerWallet.setText("");
-		cardsLeft.setText("");
-		dealerSays.setText("");
 	}
 
 	public void updateValues() {
@@ -291,3 +292,19 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		player = playerDetails.getPlayer();
 	}
+
+	private void checkGameOver() {
+		if (dealer.isGameOver()) {
+			String message;
+			if (player.getHand().getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.getHand().getTotal())) {
+				message = "Você perdeu! A partida finalizou.";
+			} else if (dealer.getHand().getTotal() > 21 || player.getHand().getTotal() > dealer.getHand().getTotal()) {
+				message = "Você ganhou! A partida finalizou.";
+			} else {
+				message = "Empate! A partida finalizou.";
+			}
+			JOptionPane.showMessageDialog(this, message);
+			table.setGameOver(true);
+		}
+	}
+}

@@ -136,4 +136,8 @@ public class Player extends BlackjackPlayer implements Serializable {
 	public PlayerCardHand getHand() {
 		return this.hand;
 	}
+
+	public void clearHand() {
+		hand.clear();
+	}
 }

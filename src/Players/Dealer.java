@@ -61,6 +61,10 @@ public class Dealer extends BlackjackPlayer {
 		return gameOver;
 	}
 
+	public void setGameOver(Boolean b) {
+		gameOver = b;
+	}
+
 	public boolean areCardsFaceUp() {
 		return cardsFaceUp;
 	}

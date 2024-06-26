@@ -24,6 +24,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	private ArrayList<JButton> add25ChipButtons;
 	private ArrayList<JButton> add100ChipButtons;
 	private ArrayList<JButton> clearBetButtons;
+	private JButton resetButton;
 
 	private ArrayList<JLabel> currentBetLabels;
 	private ArrayList<JLabel> playerWalletLabels;
@@ -69,6 +70,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		topPanel.add(cardsLeft, BorderLayout.SOUTH);
 		dealerSays.setForeground(Color.WHITE);
 		cardsLeft.setForeground(Color.WHITE);
+		resetButton = new JButton("Reset Game");
+        	resetButton.addActionListener(this);
+        	topPanel.add(resetButton, BorderLayout.CENTER);
 		add(topPanel, BorderLayout.NORTH);
 
 		// Criar painéis de controle individual para cada jogador na parte inferior
@@ -131,6 +135,16 @@ public class GamePanel extends JPanel implements ActionListener {
 		updateValues();
 	}
 
+	private void resetGame() {
+		dealer.setGameOver(true);
+		table.setGameOver(true);
+			for (int i = 0; i < players.size(); i++) {
+				players.get(i).clearHand();
+				clearBet(i);
+			}
+			updateValues();
+	}	
+
 	private JButton createButton(String text, ArrayList<JButton> buttonList) {
 		JButton button = new JButton(text);
 		button.addActionListener(this);
@@ -184,7 +198,8 @@ public class GamePanel extends JPanel implements ActionListener {
 			increaseBet(playerIndex, Integer.parseInt(act));
 		} else if (act.equals("Clear")) {
 			clearBet(playerIndex);
-		}
+		} else if (act.equals("Reset Game")) {
+            		resetGame();
 
 		updateValues();
 	}

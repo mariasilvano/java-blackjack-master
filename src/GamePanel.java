@@ -199,7 +199,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		} else if (act.equals("Clear")) {
 			clearBet(playerIndex);
 		} else if (act.equals("Reset Game")) {
-            		resetGame();
+			resetGame();
+		}
 
 		updateValues();
 	}

@@ -416,4 +416,13 @@ public class GamePanel extends JPanel implements ActionListener {
 			updateValues();
 		}
 	}
+
+	public int getCurrentPlayerID() {
+		return currentPlayerIndex;
+	}
+
+	public void updatePlayerNameColor(Color color) {
+		table.setPlayerNameColor(color);
+		table.repaint();
+	}
 }

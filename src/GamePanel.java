@@ -173,7 +173,7 @@ public class GamePanel extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Todos os jogadores devem fazer uma aposta antes de começar o jogo.", "Aposta insuficiente", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			newGame(playerIndex);
+			newGame();
 		} else if (act.equals("Hit")) {
 			hit(playerIndex);
 		} else if (act.equals("Double")) {
@@ -203,7 +203,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		return act.equals("1") || act.equals("5") || act.equals("10") || act.equals("25") || act.equals("100");
 	}
 
-	public void newGame(int playerIndex) {
+	public void newGame() {
 		dealer.deal(players);
 		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
 		for (Player player : players) {
@@ -216,10 +216,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 		table.setNames(dealer.getName(), playerNames);
 		table.setGameOver(false);
-		currentPlayerIndex = playerIndex;
-		table.startCardAnimation(players.get(currentPlayerIndex).getHand().size() - 1);
+		currentPlayerIndex = 0;
 		updateValues();
-		checkGameOver();
+		updateTurn();
 	}
 
 	private boolean allPlayersHaveBet() {
@@ -233,33 +232,24 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void hit(int playerIndex) {
 		dealer.hit(players.get(playerIndex));
-		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
-		for (Player player : players) {
-			playerHands.add(player.getHand());
-		}
-		table.setHands(dealer.getHand(), playerHands);
-		table.startCardAnimation(players.get(playerIndex).getHand().size() - 1);
 		updateValues();
-		checkGameOver();
+		if (players.get(playerIndex).hand.isBust()) {
+			JOptionPane.showMessageDialog(this, players.get(playerIndex).getName() + " estourou!");
+			nextTurn();
+		}
 	}
 
 	public void playDouble(int playerIndex) {
 		dealer.playDouble(players.get(playerIndex), players);
-		ArrayList<PlayerCardHand> playerHands = new ArrayList<>();
-		for (Player player : players) {
-			playerHands.add(player.getHand());
-		}
-		table.setHands(dealer.getHand(), playerHands);
-		table.startCardAnimation(players.get(playerIndex).getHand().size() - 1);
 		updateValues();
-		checkGameOver();
+		if (players.get(playerIndex).hand.isBust()) {
+			JOptionPane.showMessageDialog(this, players.get(playerIndex).getName() + " estourou!");
+		}
+		nextTurn();
 	}
 
 	public void stand(int playerIndex) {
-		dealer.stand(players.get(playerIndex), players);
-		currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-		updateValues();
-		checkGameOver();
+		nextTurn();
 	}
 
 	public void increaseBet(int playerIndex, int amount) {
@@ -281,8 +271,8 @@ public class GamePanel extends JPanel implements ActionListener {
 			Player player = players.get(i);
 			doubleButtons.get(i).setEnabled(!dealer.isGameOver() && dealer.canPlayerDouble(player));
 			newGameButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced() && !player.isBankrupt());
-			hitButtons.get(i).setEnabled(!dealer.isGameOver());
-			standButtons.get(i).setEnabled(!dealer.isGameOver());
+			hitButtons.get(i).setEnabled(!dealer.isGameOver() && currentPlayerIndex == i);
+			standButtons.get(i).setEnabled(!dealer.isGameOver() && currentPlayerIndex == i);
 			clearBetButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced());
 			add1ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 1.0);
 			add5ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 5);
@@ -394,26 +384,46 @@ public class GamePanel extends JPanel implements ActionListener {
 		playerDetails.setVisible(true);
 
 		players.set(playerIndex, playerDetails.getPlayer());
+		updateValues(); // Atualiza a interface gráfica após a alteração dos jogadores
 	}
 
-	private void checkGameOver() {
-		if (dealer.isGameOver()) {
-			for (Player player : players) {
-				String message;
-				if (player.getHand().getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.getHand().getTotal())) {
-					message = player.getName() + " perdeu!";
-				} else if (dealer.getHand().getTotal() > 21 || player.getHand().getTotal() > dealer.getHand().getTotal()) {
-					message = player.getName() + " ganhou!";
-				} else {
-					message = player.getName() + " empatou!";
-				}
-				JOptionPane.showMessageDialog(this, message);
+	private void nextTurn() {
+		currentPlayerIndex++;
+		if (currentPlayerIndex >= players.size()) {
+			dealerPlay();
+		} else {
+			updateTurn();
+		}
+	}
+
+	private void dealerPlay() {
+		dealer.revealCards();
+		updateValues();
+		dealer.go(players);
+
+		for (Player player : players) {
+			String message;
+			if (player.hand.getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.hand.getTotal())) {
+				message = player.getName() + " perdeu!";
+			} else if (dealer.getHand().getTotal() > 21 || player.hand.getTotal() > dealer.getHand().getTotal()) {
+				message = player.getName() + " ganhou!";
+				player.setWallet(player.getWallet() + player.getBet() * 2); // Adiciona o valor ganho ao saldo do jogador
+			} else {
+				message = player.getName() + " empatou!";
+				player.setWallet(player.getWallet() + player.getBet()); // Retorna a aposta ao saldo do jogador
 			}
-			table.setGameOver(true);
-			for (int i = 0; i < players.size(); i++) {
-				players.get(i).clearHand();
-			}
-			updateValues();
+			JOptionPane.showMessageDialog(this, message);
+		}
+		table.setGameOver(true);
+		updateValues();
+	}
+
+	private void updateTurn() {
+		for (int i = 0; i < players.size(); i++) {
+			boolean isCurrentPlayer = (i == currentPlayerIndex);
+			hitButtons.get(i).setEnabled(isCurrentPlayer);
+			standButtons.get(i).setEnabled(isCurrentPlayer);
+			doubleButtons.get(i).setEnabled(isCurrentPlayer && dealer.canPlayerDouble(players.get(i)));
 		}
 	}
 

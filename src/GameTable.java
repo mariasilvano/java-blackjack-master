@@ -149,6 +149,7 @@ public class GameTable extends JPanel {
 
     public void setPlayerNameColor(Color color) {
         this.playerNameColor = color;
+        repaint();
     }
 
     public void setGameOver(boolean gameOver) {

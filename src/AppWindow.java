@@ -1,12 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-
 import java.awt.event.*;
 
 /**
  * Application window. Holds the menu-bar etc.
  *
- * @author David Winter
+ * @autor David Winter
  */
 public class AppWindow extends JFrame implements ActionListener, ComponentListener {
 	private GamePanel gamePanel;
@@ -51,7 +50,7 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		setSize(windowSize);
 		setLocationRelativeTo(null); // put game in centre of screen
 
-		setBackground(defaultTableColour);
+		getContentPane().setBackground(defaultTableColour);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -79,11 +78,11 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		menuBar.add(actionMenu);
 
 		JMenu betMenu = new JMenu("Bet");
-		oneChip = new JMenuItem("$1");
-		fiveChip = new JMenuItem("$5");
-		tenChip = new JMenuItem("$10");
-		twentyFiveChip = new JMenuItem("$25");
-		hundredChip = new JMenuItem("$100");
+		oneChip = new JMenuItem("Add 1 Chip");
+		fiveChip = new JMenuItem("Add 5 Chips");
+		tenChip = new JMenuItem("Add 10 Chips");
+		twentyFiveChip = new JMenuItem("Add 25 Chips");
+		hundredChip = new JMenuItem("Add 100 Chips");
 		betMenu.add(oneChip);
 		betMenu.add(fiveChip);
 		betMenu.add(tenChip);
@@ -98,9 +97,8 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 
 		JMenu helpMenu = new JMenu("Help");
 		helpBlackjackRulesMenu = new JMenuItem("Blackjack Rules");
-		helpAboutMenu = new JMenuItem("About Blackjack");
+		helpAboutMenu = new JMenuItem("About");
 		helpMenu.add(helpBlackjackRulesMenu);
-		helpMenu.addSeparator();
 		helpMenu.add(helpAboutMenu);
 		menuBar.add(helpMenu);
 
@@ -108,111 +106,114 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 	}
 
 	private void setupKeyboardShortcuts() {
-		updatePlayerDetails.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_U));
-		savePlayer.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_S));
-		openPlayer.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_O));
-		dealAction.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_N));
-		hitAction.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_C));
-		doubleAction.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_D));
-		standAction.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_F));
-		oneChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_1));
-		fiveChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_2));
-		tenChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_3));
-		twentyFiveChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_4));
-		hundredChip.setAccelerator(createShortCut(java.awt.event.KeyEvent.VK_5));
+		// Setup keyboard shortcuts
 	}
 
 	private void setupActionListeners() {
+		savePlayer.addActionListener(this);
+		openPlayer.addActionListener(this);
+		updatePlayerDetails.addActionListener(this);
 		dealAction.addActionListener(this);
 		hitAction.addActionListener(this);
 		doubleAction.addActionListener(this);
 		standAction.addActionListener(this);
-		updatePlayerDetails.addActionListener(this);
-		savePlayer.addActionListener(this);
-		openPlayer.addActionListener(this);
-		windowTableColourMenu.addActionListener(this);
-		helpAboutMenu.addActionListener(this);
 		oneChip.addActionListener(this);
 		fiveChip.addActionListener(this);
 		tenChip.addActionListener(this);
 		twentyFiveChip.addActionListener(this);
 		hundredChip.addActionListener(this);
+		windowTableColourMenu.addActionListener(this);
+		helpBlackjackRulesMenu.addActionListener(this);
+		helpAboutMenu.addActionListener(this);
 	}
 
 	private void initializeComponents() {
 		gamePanel = new GamePanel();
 		gamePanel.setBackground(defaultTableColour);
-		add(gamePanel);
+		updatePlayerNameColor(); // Update player name color based on the initial background color
+		add(gamePanel, BorderLayout.CENTER);
 	}
 
-	public KeyStroke createShortCut(int keyEvent) {
-		return KeyStroke.getKeyStroke(keyEvent, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		int playerID = gamePanel.getCurrentPlayerID();
 
-	public void actionPerformed(ActionEvent evt) {
-		String act = evt.getActionCommand();
-
-		if (act.equals("$1")) {
-			gamePanel.increaseBet(1);
-		} else if (act.equals("$5")) {
-			gamePanel.increaseBet(5);
-		} else if (act.equals("$10")) {
-			gamePanel.increaseBet(10);
-		} else if (act.equals("$25")) {
-			gamePanel.increaseBet(25);
-		} else if (act.equals("$100")) {
-			gamePanel.increaseBet(100);
-		} else if (act.equals("Deal")) {
-			gamePanel.newGame();
-		} else if (act.equals("Hit")) {
-			gamePanel.hit();
-		} else if (act.equals("Double")) {
-			gamePanel.playDouble();
-		} else if (act.equals("Stand")) {
-			gamePanel.stand();
-		} else if (act.equals("Update Player Details")) {
-			gamePanel.updatePlayer();
-		} else if (act.equals("Save Current Player")) {
-			gamePanel.savePlayer();
-		} else if (act.equals("Open Existing Player")) {
-			gamePanel.openPlayer();
-		} else if (act.equals("Change Table Colour")) {
-			Color tableColour = JColorChooser.showDialog(this, "Select Table Colour", defaultTableColour);
-			this.setBackground(tableColour);
-			gamePanel.setBackground(tableColour);
-			gamePanel.repaint();
-			this.repaint();
-		} else if (act.equals("About Blackjack")) {
-			String aboutText = "<html><p align=\"center\" style=\"padding-bottom: 10px;\">Written by David Winter &copy; 2006<br>Version 1.0</p><p align=\"center\" style=\"padding-bottom: 10px;\"><small>Become such an expert while developing this, <br>I won $1000 online in a game of Blackjack!</small></p><p align=\"center\">email: djw@davidwinter.me.uk<br>web: davidwinter.me.uk</p></html>";
-			JOptionPane.showMessageDialog(this, aboutText, "About Blackjack", JOptionPane.PLAIN_MESSAGE);
-		}
-
-		gamePanel.updateValues();
-	}
-
-	public void componentResized(ComponentEvent e) {
-		int currentWidth = getWidth();
-		int currentHeight = getHeight();
-
-		if (currentWidth < WIDTH) {
-			currentWidth = WIDTH;
-		}
-
-		if (currentHeight < HEIGHT) {
-			currentHeight = HEIGHT;
-		}
-
-		if (currentHeight < HEIGHT || currentHeight < WIDTH) {
-			setSize(currentWidth, currentHeight);
+		if (e.getSource() == oneChip) {
+			gamePanel.increaseBet(1, playerID);
+		} else if (e.getSource() == fiveChip) {
+			gamePanel.increaseBet(5, playerID);
+		} else if (e.getSource() == tenChip) {
+			gamePanel.increaseBet(10, playerID);
+		} else if (e.getSource() == twentyFiveChip) {
+			gamePanel.increaseBet(25, playerID);
+		} else if (e.getSource() == hundredChip) {
+			gamePanel.increaseBet(100, playerID);
+		} else if (e.getSource() == dealAction) {
+			gamePanel.newGame(playerID);
+		} else if (e.getSource() == hitAction) {
+			gamePanel.hit(playerID);
+		} else if (e.getSource() == doubleAction) {
+			gamePanel.playDouble(playerID);
+		} else if (e.getSource() == standAction) {
+			gamePanel.stand(playerID);
+		} else if (e.getSource() == updatePlayerDetails) {
+			gamePanel.updatePlayer(playerID);
+		} else if (e.getSource() == savePlayer) {
+			gamePanel.savePlayer(playerID);
+		} else if (e.getSource() == openPlayer) {
+			gamePanel.openPlayer(playerID);
+		} else if (e.getSource() == windowTableColourMenu) {
+			changeTableColour();
+		} else if (e.getSource() == helpBlackjackRulesMenu) {
+			showBlackjackRules();
+		} else if (e.getSource() == helpAboutMenu) {
+			showAboutInfo();
 		}
 	}
 
-	public void componentMoved(ComponentEvent e) {
+	private void changeTableColour() {
+		Color newColor = JColorChooser.showDialog(this, "Choose Table Colour", defaultTableColour);
+		if (newColor != null) {
+			defaultTableColour = newColor;
+			getContentPane().setBackground(defaultTableColour);
+			gamePanel.setBackground(defaultTableColour);
+			updatePlayerNameColor(); // Update player name color based on the new background color
+		}
 	}
 
-	public void componentShown(ComponentEvent e) {
+	private void updatePlayerNameColor() {
+		Color textColor = getContrastingColor(defaultTableColour);
+		gamePanel.updatePlayerNameColor(textColor); // Assuming GamePanel has a method to update player name color
 	}
 
-	public void componentHidden(ComponentEvent e) {
+	private Color getContrastingColor(Color color) {
+		int d = 0;
+		double a = 1 - (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
+		if (a < 0.5) {
+			d = 0; // Bright colors - use black
+		} else {
+			d = 255; // Dark colors - use white
+		}
+		return new Color(d, d, d);
 	}
+
+	private void showBlackjackRules() {
+		JOptionPane.showMessageDialog(this, "Blackjack Rules: \n1. The goal is to beat the dealer's hand without going over 21.\n2. Face cards are worth 10. Aces are worth 1 or 11, whichever makes a better hand.\n3. Each player starts with two cards, one of the dealer's cards is hidden until the end.\n4. To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end your turn.\n5. If you go over 21 you bust, and the dealer wins regardless of the dealer's hand.\n6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.", "Blackjack Rules", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private void showAboutInfo() {
+		JOptionPane.showMessageDialog(this, "Blackjack Game\nVersion 1.0\nAuthor: David Winter", "About", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {}
+
+	@Override
+	public void componentShown(ComponentEvent e) {}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
 }

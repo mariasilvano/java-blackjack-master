@@ -139,12 +139,11 @@ public class Dealer extends BlackjackPlayer {
 		if (player.hand.isBust()) {
 			say(player.getName() + " busts. Loses $" + player.getBet());
 			player.loses();
-			gameOver = true;
 		}
 	}
 
 	/**
-	 * Player would like to place a bet up to double of his original and have the
+	 * Player would like to place a bet up to double of his original e have the
 	 * dealer give him one more card.
 	 *
 	 * @param player The player requesting to play double.
@@ -156,9 +155,6 @@ public class Dealer extends BlackjackPlayer {
 			if (player.hand.isBust()) {
 				say(player.getName() + " busts. Loses $" + player.getBet());
 				player.loses();
-				gameOver = true;
-			} else {
-				go(players);
 			}
 		} else {
 			say(player.getName() + ", you can't double. Not enough money.");
@@ -171,8 +167,7 @@ public class Dealer extends BlackjackPlayer {
 	 * @param player The player who wishes to stand.
 	 */
 	public void stand(Player player, ArrayList<Player> players) {
-		say(player.getName() + " stands. " + this.getName() + " turn.");
-		go(players);
+		say(player.getName() + " stands.");
 	}
 
 	/**
@@ -180,7 +175,7 @@ public class Dealer extends BlackjackPlayer {
 	 *
 	 * @param players The opposing players of the dealer.
 	 */
-	private void go(ArrayList<Player> players) {
+	public void go(ArrayList<Player> players) {
 		cardsFaceUp = true;
 
 		if (!hand.hasBlackjack()) {
@@ -216,6 +211,10 @@ public class Dealer extends BlackjackPlayer {
 		}
 
 		gameOver = true;
+	}
+
+	public void revealCards() {
+		cardsFaceUp = true;
 	}
 
 	private void keepPlaying() {

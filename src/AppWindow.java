@@ -139,17 +139,17 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		int playerID = gamePanel.getCurrentPlayerID();
 
 		if (e.getSource() == oneChip) {
-			gamePanel.increaseBet(1, playerID);
+			gamePanel.increaseBet(playerID, 1);
 		} else if (e.getSource() == fiveChip) {
-			gamePanel.increaseBet(5, playerID);
+			gamePanel.increaseBet(playerID, 5);
 		} else if (e.getSource() == tenChip) {
-			gamePanel.increaseBet(10, playerID);
+			gamePanel.increaseBet(playerID, 10);
 		} else if (e.getSource() == twentyFiveChip) {
-			gamePanel.increaseBet(25, playerID);
+			gamePanel.increaseBet(playerID, 25);
 		} else if (e.getSource() == hundredChip) {
-			gamePanel.increaseBet(100, playerID);
+			gamePanel.increaseBet(playerID, 100);
 		} else if (e.getSource() == dealAction) {
-			gamePanel.newGame(playerID);
+			gamePanel.newGame();
 		} else if (e.getSource() == hitAction) {
 			gamePanel.hit(playerID);
 		} else if (e.getSource() == doubleAction) {
@@ -157,7 +157,7 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		} else if (e.getSource() == standAction) {
 			gamePanel.stand(playerID);
 		} else if (e.getSource() == updatePlayerDetails) {
-			gamePanel.updatePlayer(playerID);
+			updatePlayerDetailsAction();
 		} else if (e.getSource() == savePlayer) {
 			gamePanel.savePlayer(playerID);
 		} else if (e.getSource() == openPlayer) {
@@ -168,6 +168,22 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 			showBlackjackRules();
 		} else if (e.getSource() == helpAboutMenu) {
 			showAboutInfo();
+		}
+	}
+
+	private void updatePlayerDetailsAction() {
+		String[] playerOptions = {"Player 1", "Player 2"};
+		int playerIndex = JOptionPane.showOptionDialog(this,
+				"Select the player to update",
+				"Update Player",
+				JOptionPane.DEFAULT_OPTION,
+				JOptionPane.INFORMATION_MESSAGE,
+				null,
+				playerOptions,
+				playerOptions[0]);
+
+		if (playerIndex >= 0) {
+			gamePanel.updatePlayer(playerIndex);
 		}
 	}
 

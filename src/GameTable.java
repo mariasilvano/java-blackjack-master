@@ -79,7 +79,7 @@ public class GameTable extends JPanel {
             }
         }
 
-        // Load background image
+        /* Load background image
         String backgroundName = "/images/background.png";
         URL backgroundURL = getClass().getResource(backgroundName);
         if (backgroundURL == null) {
@@ -87,7 +87,7 @@ public class GameTable extends JPanel {
         } else {
             backgroundImg = Toolkit.getDefaultToolkit().getImage(backgroundURL);
             imageTracker.addImage(backgroundImg, CardPack.CARDS_IN_PACK + 1);
-        }
+        }*/
 
         try {
             imageTracker.waitForAll();
@@ -193,7 +193,7 @@ public class GameTable extends JPanel {
             if (playerNames.size() > 1) {
                 g.drawString(playerNames.get(1), rightPlayerX, playerY - NAME_SPACE);
                 g.drawString(Integer.toString(players.get(1).getTotal()), rightPlayerX + 20, playerY + CARD_IMAGE_HEIGHT + 20);
-            }
+            
 
             if (gameOver) {
                 return;

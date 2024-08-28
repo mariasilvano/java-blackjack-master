@@ -184,7 +184,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		if (act.equals("Deal")) {
 			if (!allPlayersHaveBet()) {
-				JOptionPane.showMessageDialog(this, "Todos os jogadores devem fazer uma aposta antes de começar o jogo.", "Aposta insuficiente", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Todos os jogadores devem fazer uma aposta antes de come\u00E7ar o jogo.", "Aposta insuficiente", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			newGame();

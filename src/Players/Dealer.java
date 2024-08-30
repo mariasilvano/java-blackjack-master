@@ -89,13 +89,13 @@ public class Dealer extends BlackjackPlayer {
 
 	public boolean reduceBetFrom(Player player, double amount) {
 		boolean betReduced = player.reduceBet(amount);
-	
+
 		if (betReduced) {
 			say("The bet has been reduced by $" + amount + ". New bet is $" + player.getBet() + ".");
 		} else {
 			say("Bet reduction failed. Amount $" + amount + " exceeds current bet of $" + player.getBet() + ".");
 		}
-	
+
 		return betReduced;
 	}
 
@@ -259,5 +259,9 @@ public class Dealer extends BlackjackPlayer {
 
 	public DealerCardHand getHand() {
 		return hand;
+	}
+
+	public void setCanDouble(boolean playerCanDouble) {
+		this.playerCanDouble = playerCanDouble;
 	}
 }

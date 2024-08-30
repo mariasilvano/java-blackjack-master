@@ -99,6 +99,11 @@ public class Player extends BlackjackPlayer implements Serializable {
 		this.bet = 0.0;
 	}
 
+	public void allIn() {
+		this.bet += this.wallet;
+		this.wallet = 0.0;
+	}
+
 	/**
 	 * The amount the player wishes to double.
 	 *

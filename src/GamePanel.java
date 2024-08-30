@@ -23,6 +23,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	private ArrayList<JButton> add10ChipButtons;
 	private ArrayList<JButton> add25ChipButtons;
 	private ArrayList<JButton> add100ChipButtons;
+	private ArrayList<JButton> reduce1BetButtons;
+	private ArrayList<JButton> reduce10BetButtons;
 	private ArrayList<JButton> clearBetButtons;
 	private JButton resetButton;
 
@@ -48,6 +50,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		add10ChipButtons = new ArrayList<>();
 		add25ChipButtons = new ArrayList<>();
 		add100ChipButtons = new ArrayList<>();
+		reduce1BetButtons = new ArrayList<>();
+		reduce10BetButtons = new ArrayList<>();
 		clearBetButtons = new ArrayList<>();
 		currentBetLabels = new ArrayList<>();
 		playerWalletLabels = new ArrayList<>();
@@ -116,6 +120,8 @@ public class GamePanel extends JPanel implements ActionListener {
 			optionsPanel.add(createButton("Hit", hitButtons));
 			optionsPanel.add(createButton("Double", doubleButtons));
 			optionsPanel.add(createButton("Stand", standButtons));
+			optionsPanel.add(createButton("-1", reduce1BetButtons));
+			optionsPanel.add(createButton("-10", reduce10BetButtons));
 
 			playerPanel.add(betPanel, BorderLayout.NORTH);
 			playerPanel.add(optionsPanel, BorderLayout.SOUTH);
@@ -196,6 +202,9 @@ public class GamePanel extends JPanel implements ActionListener {
 			stand(playerIndex);
 		} else if (isBetEvent(act)) {
 			increaseBet(playerIndex, Integer.parseInt(act));
+		} else if (isReduceBetEvent(act)) {
+			int reduction = act.equals("-1") ? 1 : 10;
+			reduceBetBy(playerIndex, reduction);
 		} else if (act.equals("Clear")) {
 			clearBet(playerIndex);
 		} else if (act.equals("Reset Game")) {
@@ -208,7 +217,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	private int getPlayerIndex(Object source) {
 		for (int i = 0; i < players.size(); i++) {
 			if (newGameButtons.get(i) == source || hitButtons.get(i) == source || doubleButtons.get(i) == source || standButtons.get(i) == source || clearBetButtons.get(i) == source ||
-					add1ChipButtons.get(i) == source || add5ChipButtons.get(i) == source || add10ChipButtons.get(i) == source || add25ChipButtons.get(i) == source || add100ChipButtons.get(i) == source) {
+					add1ChipButtons.get(i) == source || add5ChipButtons.get(i) == source || add10ChipButtons.get(i) == source || add25ChipButtons.get(i) == source || add100ChipButtons.get(i) == source ||
+					reduce1BetButtons.get(i) == source || reduce10BetButtons.get(i) == source) {
 				return i;
 			}
 		}
@@ -217,6 +227,10 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public boolean isBetEvent(String act) {
 		return act.equals("1") || act.equals("5") || act.equals("10") || act.equals("25") || act.equals("100");
+	}
+
+	public boolean isReduceBetEvent(String act) {
+		return act.equals("-1") || act.equals("-10");
 	}
 
 	public void newGame() {
@@ -273,6 +287,11 @@ public class GamePanel extends JPanel implements ActionListener {
 		dealer.acceptBetFrom(player, amount + player.getBet());
 	}
 
+	public void reduceBetBy(int playerIndex, int amount) {
+		Player player = players.get(playerIndex);
+		dealer.reduceBetFrom(player, amount);
+	}
+
 	public void clearBet(int playerIndex) {
 		Player player = players.get(playerIndex);
 		player.clearBet();
@@ -295,7 +314,9 @@ public class GamePanel extends JPanel implements ActionListener {
 			add10ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 10);
 			add25ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 25);
 			add100ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 100);
-
+			reduce1BetButtons.get(i).setEnabled(dealer.isGameOver() && player.getBet() >= 1);
+			reduce10BetButtons.get(i).setEnabled(dealer.isGameOver() && player.getBet() >= 10);
+			
 			// redraw bet
 			currentBetLabels.get(i).setText(Double.toString(player.getBet()));
 			playerWalletLabels.get(i).setText(Double.toString(player.getWallet()));

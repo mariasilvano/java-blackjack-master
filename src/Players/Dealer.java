@@ -87,6 +87,18 @@ public class Dealer extends BlackjackPlayer {
 		return betSet;
 	}
 
+	public boolean reduceBetFrom(Player player, double amount) {
+		boolean betReduced = player.reduceBet(amount);
+	
+		if (betReduced) {
+			say("The bet has been reduced by $" + amount + ". New bet is $" + player.getBet() + ".");
+		} else {
+			say("Bet reduction failed. Amount $" + amount + " exceeds current bet of $" + player.getBet() + ".");
+		}
+	
+		return betReduced;
+	}
+
 	/**
 	 * Deals initial two cards to each player and self.
 	 *

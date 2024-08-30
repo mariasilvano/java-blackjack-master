@@ -76,6 +76,15 @@ public class Player extends BlackjackPlayer implements Serializable {
 		return false;
 	}
 
+	public boolean reduceBet(double amount) {
+		if (amount > 0 && amount <= this.bet) {
+			this.bet -= amount;
+			this.wallet += amount;
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Get the players current bet.
 	 *

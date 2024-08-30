@@ -28,7 +28,7 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 	private JMenuItem helpBlackjackRulesMenu;
 	private JMenuItem helpAboutMenu;
 
-	final int WIDTH = 600;
+	final int WIDTH = 1000;
 	final int HEIGHT = 500;
 
 	public AppWindow() {
@@ -45,15 +45,17 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 
 	private void configureWindow() {
 		addComponentListener(this);
-
+	
 		Dimension windowSize = new Dimension(WIDTH, HEIGHT);
 		setSize(windowSize);
-		setLocationRelativeTo(null); // put game in centre of screen
-
+		setMinimumSize(windowSize); // Define o tamanho mínimo
+		setLocationRelativeTo(null); // Coloca o jogo no centro da tela
+	
 		getContentPane().setBackground(defaultTableColour);
-
+	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
+	
 
 	private void setupMenus() {
 		JMenuBar menuBar = new JMenuBar();

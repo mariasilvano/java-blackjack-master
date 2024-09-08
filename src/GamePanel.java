@@ -225,11 +225,10 @@ public class GamePanel extends JPanel implements ActionListener {
 		for (int i = 0; i < players.size(); i++) {
 			if (newGameButtons.get(i) == source || hitButtons.get(i) == source || doubleButtons.get(i) == source
 					|| standButtons.get(i) == source || clearBetButtons.get(i) == source
-					|| allInButtons.get(i) == source ||
-					add1ChipButtons.get(i) == source || add5ChipButtons.get(i) == source
-					|| add10ChipButtons.get(i) == source || add25ChipButtons.get(i) == source
-					|| add100ChipButtons.get(i) == source ||
-					reduce1BetButtons.get(i) == source || reduce10BetButtons.get(i) == source) {
+					|| allInButtons.get(i) == source || add1ChipButtons.get(i) == source
+					|| add5ChipButtons.get(i) == source || add10ChipButtons.get(i) == source
+					|| add25ChipButtons.get(i) == source || add100ChipButtons.get(i) == source
+					|| reduce1BetButtons.get(i) == source || reduce10BetButtons.get(i) == source) {
 				return i;
 			}
 		}
@@ -444,7 +443,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		updateValues(); // Atualiza a interface gráfica após a alteração dos jogadores
 	}
 
-	//////////////////////////////////////////////////////
 	private void nextTurn() {
 		currentPlayerIndex++;
 		if (currentPlayerIndex >= players.size()) {

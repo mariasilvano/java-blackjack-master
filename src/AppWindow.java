@@ -45,17 +45,16 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 
 	private void configureWindow() {
 		addComponentListener(this);
-	
+
 		Dimension windowSize = new Dimension(WIDTH, HEIGHT);
 		setSize(windowSize);
 		setMinimumSize(windowSize); // Define o tamanho mínimo
 		setLocationRelativeTo(null); // Coloca o jogo no centro da tela
-	
+
 		getContentPane().setBackground(defaultTableColour);
-	
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-	
 
 	private void setupMenus() {
 		JMenuBar menuBar = new JMenuBar();
@@ -157,19 +156,19 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 		int playerID = gamePanel.getCurrentPlayerID();
 
 		if (e.getSource() == oneChip) {
-			gamePanel.increaseBet(playerID, 1);
+			gamePanel.increaseBet(playerID, Chip.one().getValue());
 			enableButton();
 		} else if (e.getSource() == fiveChip) {
-			gamePanel.increaseBet(playerID, 5);
+			gamePanel.increaseBet(playerID, Chip.five().getValue());
 			enableButton();
 		} else if (e.getSource() == tenChip) {
-			gamePanel.increaseBet(playerID, 10);
+			gamePanel.increaseBet(playerID, Chip.ten().getValue());
 			enableButton();
 		} else if (e.getSource() == twentyFiveChip) {
-			gamePanel.increaseBet(playerID, 25);
+			gamePanel.increaseBet(playerID, Chip.twentyFive().getValue());
 			enableButton();
 		} else if (e.getSource() == hundredChip) {
-			gamePanel.increaseBet(playerID, 100);
+			gamePanel.increaseBet(playerID, Chip.hundred().getValue());
 			enableButton();
 		} else if (e.getSource() == dealAction) {
 			gamePanel.newGame();
@@ -205,15 +204,9 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 	}
 
 	private void updatePlayerDetailsAction() {
-		String[] playerOptions = {"Player 1", "Player 2"};
-		int playerIndex = JOptionPane.showOptionDialog(this,
-				"Select the player to update",
-				"Update Player",
-				JOptionPane.DEFAULT_OPTION,
-				JOptionPane.INFORMATION_MESSAGE,
-				null,
-				playerOptions,
-				playerOptions[0]);
+		String[] playerOptions = { "Player 1", "Player 2" };
+		int playerIndex = JOptionPane.showOptionDialog(this, "Select the player to update", "Update Player",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, playerOptions, playerOptions[0]);
 
 		if (playerIndex >= 0) {
 			gamePanel.updatePlayer(playerIndex);
@@ -247,22 +240,29 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 	}
 
 	private void showBlackjackRules() {
-		JOptionPane.showMessageDialog(this, "Blackjack Rules: \n1. The goal is to beat the dealer's hand without going over 21.\n2. Face cards are worth 10. Aces are worth 1 or 11, whichever makes a better hand.\n3. Each player starts with two cards, one of the dealer's cards is hidden until the end.\n4. To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end your turn.\n5. If you go over 21 you bust, and the dealer wins regardless of the dealer's hand.\n6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.", "Blackjack Rules", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(this,
+				"Blackjack Rules: \n1. The goal is to beat the dealer's hand without going over 21.\n2. Face cards are worth 10. Aces are worth 1 or 11, whichever makes a better hand.\n3. Each player starts with two cards, one of the dealer's cards is hidden until the end.\n4. To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end your turn.\n5. If you go over 21 you bust, and the dealer wins regardless of the dealer's hand.\n6. If you are dealt 21 from the start (Ace & 10), you got a blackjack.",
+				"Blackjack Rules", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private void showAboutInfo() {
-		JOptionPane.showMessageDialog(this, "Blackjack Game\nVersion 1.0\nAuthor: David Winter", "About", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(this, "Blackjack Game\nVersion 1.0\nAuthor: David Winter", "About",
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	@Override
-	public void componentResized(ComponentEvent e) {}
+	public void componentResized(ComponentEvent e) {
+	}
 
 	@Override
-	public void componentMoved(ComponentEvent e) {}
+	public void componentMoved(ComponentEvent e) {
+	}
 
 	@Override
-	public void componentShown(ComponentEvent e) {}
+	public void componentShown(ComponentEvent e) {
+	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {}
+	public void componentHidden(ComponentEvent e) {
+	}
 }

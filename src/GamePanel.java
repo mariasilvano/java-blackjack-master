@@ -83,8 +83,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		dealerSays.setForeground(Color.WHITE);
 		cardsLeft.setForeground(Color.WHITE);
 		resetButton = new JButton("Reset Game");
-        	resetButton.addActionListener(this);
-        	topPanel.add(resetButton, BorderLayout.CENTER);
+		resetButton.addActionListener(this);
+		topPanel.add(resetButton, BorderLayout.CENTER);
 		add(topPanel, BorderLayout.NORTH);
 
 		// Criar painéis de controle individual para cada jogador na parte inferior
@@ -153,12 +153,12 @@ public class GamePanel extends JPanel implements ActionListener {
 	private void resetGame() {
 		dealer.setGameOver(true);
 		table.setGameOver(true);
-			for (int i = 0; i < players.size(); i++) {
-				players.get(i).clearHand();
-				clearBet(i);
-			}
-			updateValues();
-	}	
+		for (int i = 0; i < players.size(); i++) {
+			players.get(i).clearHand();
+			clearBet(i);
+		}
+		updateValues();
+	}
 
 	private JButton createButton(String text, ArrayList<JButton> buttonList) {
 		JButton button = new JButton(text);
@@ -199,7 +199,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		if (act.equals("Deal")) {
 			if (!allPlayersHaveBet()) {
-				JOptionPane.showMessageDialog(this, "Todos os jogadores devem fazer uma aposta antes de come\u00E7ar o jogo.", "Aposta insuficiente", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						"Todos os jogadores devem fazer uma aposta antes de come\u00E7ar o jogo.",
+						"Aposta insuficiente", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			newGame();
@@ -227,8 +229,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	private int getPlayerIndex(Object source) {
 		for (int i = 0; i < players.size(); i++) {
-			if (newGameButtons.get(i) == source || hitButtons.get(i) == source || doubleButtons.get(i) == source || standButtons.get(i) == source || clearBetButtons.get(i) == source || allInButtons.get(i) == source ||
-					add1ChipButtons.get(i) == source || add5ChipButtons.get(i) == source || add10ChipButtons.get(i) == source || add25ChipButtons.get(i) == source || add100ChipButtons.get(i) == source ||
+			if (newGameButtons.get(i) == source || hitButtons.get(i) == source || doubleButtons.get(i) == source
+					|| standButtons.get(i) == source || clearBetButtons.get(i) == source
+					|| allInButtons.get(i) == source ||
+					add1ChipButtons.get(i) == source || add5ChipButtons.get(i) == source
+					|| add10ChipButtons.get(i) == source || add25ChipButtons.get(i) == source
+					|| add100ChipButtons.get(i) == source ||
 					reduce1BetButtons.get(i) == source || reduce10BetButtons.get(i) == source) {
 				return i;
 			}
@@ -316,10 +322,12 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void updateValues() {
 		Color colorText = Color.WHITE;
 
-		dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">" + dealer.says() + "</font></p></html>");
+		dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">"
+				+ dealer.says() + "</font></p></html>");
 
 		for (int i = 0; i < players.size(); i++) {
 			Player player = players.get(i);
+
 			doubleButtons.get(i).setEnabled(dealer.isPlayerEligibleForDouble(player));
 			newGameButtons.get(i).setEnabled(dealer.isGameOver() && player.canPlaceBet());
 			hitButtons.get(i).setEnabled(dealer.isPlayerEligibleForAction(i, currentPlayerIndex));
@@ -333,7 +341,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			add100ChipButtons.get(i).setEnabled(dealer.isWalletSufficientForChip(player, 100));
 			reduce1BetButtons.get(i).setEnabled(dealer.isGameOver() && player.getBet() >= 1);
 			reduce10BetButtons.get(i).setEnabled(dealer.isGameOver() && player.getBet() >= 10);
-			
+
 			// redraw bet
 			currentBetLabels.get(i).setText(Double.toString(player.getBet()));
 			playerWalletLabels.get(i).setText(Double.toString(player.getWallet()));
@@ -355,7 +363,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		table.setPlayerNameColor(colorText);
 		table.repaint();
 
-		cardsLeft.setText("Deck: " + dealer.cardsLeftInPack() + "/" + (dealer.CARD_PACKS * Cards.CardPack.CARDS_IN_PACK));
+		cardsLeft.setText(
+				"Deck: " + dealer.cardsLeftInPack() + "/" + (dealer.CARD_PACKS * Cards.CardPack.CARDS_IN_PACK));
 		cardsLeft.setForeground(Color.WHITE);
 
 		for (Player player : players) {
@@ -441,11 +450,13 @@ public class GamePanel extends JPanel implements ActionListener {
 		updateValues(); // Atualiza a interface gráfica após a alteração dos jogadores
 	}
 
+	//////////////////////////////////////////////////////
 	private void nextTurn() {
 		currentPlayerIndex++;
 		if (currentPlayerIndex >= players.size()) {
 			dealerPlay();
 		} else {
+			dealer.setCanDouble(true);
 			updateTurn();
 		}
 	}
@@ -457,16 +468,20 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		for (Player player : players) {
 			String message;
-			if (player.hand.getTotal() > 21 || (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.hand.getTotal())) {
+			if (player.hand.getTotal() > 21
+					|| (dealer.getHand().getTotal() <= 21 && dealer.getHand().getTotal() > player.hand.getTotal())) {
 				message = player.getName() + " perdeu!";
 			} else if (dealer.getHand().getTotal() > 21 || player.hand.getTotal() > dealer.getHand().getTotal()) {
 				message = player.getName() + " ganhou!";
-				player.setWallet(player.getWallet() + player.getBet() * 2); // Adiciona o valor ganho ao saldo do jogador
+				player.setWallet(player.getWallet() + player.getBet() * 2); // Adiciona o valor ganho ao saldo do
+																			// jogador
 			} else {
 				message = player.getName() + " empatou!";
 				player.setWallet(player.getWallet() + player.getBet()); // Retorna a aposta ao saldo do jogador
 			}
 			JOptionPane.showMessageDialog(this, message);
+			player.hand.clear();
+			player.hand.getTotal();
 		}
 		table.setGameOver(true);
 		updateValues();

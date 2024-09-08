@@ -28,7 +28,7 @@ public class AppWindow extends JFrame implements ActionListener, ComponentListen
 	private JMenuItem helpBlackjackRulesMenu;
 	private JMenuItem helpAboutMenu;
 
-	final int WIDTH = 1000;
+	final int WIDTH = 1200;
 	final int HEIGHT = 500;
 
 	public AppWindow() {

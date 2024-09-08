@@ -29,16 +29,12 @@ public class Player extends BlackjackPlayer implements Serializable {
 		super();
 	}
 
-	/**
-	 * Conversion constructor that creates a new player.
-	 *
-	 * @param name   The name of the player.
-	 * @param age    The age of the player.
-	 * @param gender The players gender.
-	 */
-	public Player(String name, int age, String gender) {
-		super(name, age, gender);
-	}
+	private PersonInfo personInfo;
+
+    public Player(PersonInfo info) {
+        super(info.getName(), info.getAge(), info.getGender());
+        this.personInfo = info;
+    }
 
 	/**
 	 * Sets the players wallet size.
@@ -140,6 +136,10 @@ public class Player extends BlackjackPlayer implements Serializable {
 
 	public boolean canDouble() {
 		return getBet() <= getWallet();
+	}
+
+	public boolean canPlaceBet() {
+		return !isBankrupt() && betPlaced();
 	}
 
 	/**

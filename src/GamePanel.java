@@ -60,8 +60,14 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		dealer = new Dealer();
 		players = new ArrayList<>();
-		players.add(new Player("James Bond", 32, "Male"));
-		players.add(new Player("Ethan Hunt", 35, "Male"));
+
+		// Criação dos objetos PersonInfo para cada jogador
+		PersonInfo personInfo1 = new PersonInfo("James Bond", 32, "Male");
+		PersonInfo personInfo2 = new PersonInfo("Ethan Hunt", 35, "Male");
+	
+		players.add(new Player(personInfo1));
+		players.add(new Player(personInfo2));
+
 		for (Player player : players) {
 			player.setWallet(100.00);
 		}
@@ -321,18 +327,18 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		for (int i = 0; i < players.size(); i++) {
 			Player player = players.get(i);
-			doubleButtons.get(i)
-					.setEnabled(!dealer.isGameOver() && dealer.canPlayerDouble(player) && currentPlayerIndex == i);
-			newGameButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced() && !player.isBankrupt());
-			hitButtons.get(i).setEnabled(!dealer.isGameOver() && currentPlayerIndex == i);
-			standButtons.get(i).setEnabled(!dealer.isGameOver() && currentPlayerIndex == i);
+
+			doubleButtons.get(i).setEnabled(dealer.isPlayerEligibleForDouble(player));
+			newGameButtons.get(i).setEnabled(dealer.isGameOver() && player.canPlaceBet());
+			hitButtons.get(i).setEnabled(dealer.isPlayerEligibleForAction(i, currentPlayerIndex));
+			standButtons.get(i).setEnabled(dealer.isPlayerEligibleForAction(i, currentPlayerIndex));
 			clearBetButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced());
 			allInButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 1.0);
-			add1ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 1.0);
-			add5ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 5);
-			add10ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 10);
-			add25ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 25);
-			add100ChipButtons.get(i).setEnabled(dealer.isGameOver() && player.getWallet() >= 100);
+			add1ChipButtons.get(i).setEnabled(dealer.isWalletSufficientForChip(player, 1));
+			add5ChipButtons.get(i).setEnabled(dealer.isWalletSufficientForChip(player, 5));
+			add10ChipButtons.get(i).setEnabled(dealer.isWalletSufficientForChip(player, 10));
+			add25ChipButtons.get(i).setEnabled(dealer.isWalletSufficientForChip(player, 25));
+			add100ChipButtons.get(i).setEnabled(dealer.isWalletSufficientForChip(player, 100));
 			reduce1BetButtons.get(i).setEnabled(dealer.isGameOver() && player.getBet() >= 1);
 			reduce10BetButtons.get(i).setEnabled(dealer.isGameOver() && player.getBet() >= 10);
 

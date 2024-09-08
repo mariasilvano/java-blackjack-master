@@ -42,12 +42,15 @@ public class Dealer extends BlackjackPlayer {
 	/**
 	 * Default constructor that creates a new dealer with a deck of 2 card packs.
 	 */
-	public Dealer() {
-		super("Le Chiffre", 45, "male");
+	private PersonInfo personInfo;
+
+    public Dealer() {
+        super("Le Chiffre", 45, "male");
+        this.personInfo = new PersonInfo("Le Chiffre", 45, "male");
 
 		deck = new Deck(CARD_PACKS);
-	}
-
+    }
+	
 	public void say(String announcement) {
 		said = announcement;
 		System.out.println(said);
@@ -259,5 +262,17 @@ public class Dealer extends BlackjackPlayer {
 
 	public DealerCardHand getHand() {
 		return hand;
+	}
+
+	public boolean isPlayerEligibleForDouble(Player player) {
+		return !isGameOver() && canPlayerDouble(player);
+	}
+	
+	public boolean isPlayerEligibleForAction(int playerIndex, int currentPlayerIndex) {
+		return !isGameOver() && currentPlayerIndex == playerIndex;
+	}
+	
+	public boolean isWalletSufficientForChip(Player player, int chipValue) {
+		return isGameOver() && player.getWallet() >= chipValue;
 	}
 }

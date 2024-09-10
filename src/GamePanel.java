@@ -14,6 +14,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	private GameTable table;
 
+	private ArrayList<String> dealerHistory;
+
 	private ArrayList<JButton> newGameButtons;
 	private ArrayList<JButton> hitButtons;
 	private ArrayList<JButton> doubleButtons;
@@ -28,6 +30,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	private ArrayList<JButton> allInButtons;
 	private ArrayList<JButton> clearBetButtons;
 	private JButton resetButton;
+	private JButton historyButton;
+	private HistoryFrame historyFrame;
 
 	private ArrayList<JLabel> currentBetLabels;
 	private ArrayList<JLabel> playerWalletLabels;
@@ -57,7 +61,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		clearBetButtons = new ArrayList<>();
 		currentBetLabels = new ArrayList<>();
 		playerWalletLabels = new ArrayList<>();
-	
+		dealerHistory = new ArrayList<>();
+		historyFrame = null;
+
 		dealer = new Dealer();
 		players = new ArrayList<>();
 	
@@ -82,8 +88,32 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 		resetButton = new JButton("Reset Game");
 		resetButton.addActionListener(this);
-		topPanel.add(resetButton, BorderLayout.CENTER);
+		
 		add(topPanel, BorderLayout.NORTH);
+
+		historyButton = new JButton("History");
+		historyButton.addActionListener(e -> showHistory());
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridBagLayout());
+		buttonPanel.setBackground(Color.BLACK);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(0, 0, 0, 10); // Espaçamento à direita
+
+		// Adicione o botão Reset
+		resetButton.setPreferredSize(new Dimension(100, 30));
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		buttonPanel.add(resetButton, gbc);
+
+		// Adicione o botão Histórico
+		historyButton.setPreferredSize(new Dimension(100, 30));
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		buttonPanel.add(historyButton, gbc);
+
+		topPanel.add(buttonPanel, BorderLayout.CENTER);
 	
 		// Painel inferior com os botões de ação e o botão Deal
 		JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -158,7 +188,22 @@ public class GamePanel extends JPanel implements ActionListener {
 			players.get(i).clearHand();
 			clearBet(i);
 		}
+		dealerHistory.clear();
 		updateValues();
+
+		if (historyFrame != null) {
+            historyFrame.dispose(); // Fechar a janela do histórico
+            historyFrame = null; // Definir a instância como null
+        }
+	}
+
+	private void showHistory() {
+		if (historyFrame == null || !historyFrame.isVisible()) {
+            historyFrame = new HistoryFrame(dealerHistory);
+            historyFrame.setVisible(true);
+        } else {
+            historyFrame.updateHistory();
+        }
 	}
 
 	private JButton createButton(String text, ArrayList<JButton> buttonList) {
@@ -297,6 +342,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 
 	public void stand(int playerIndex) {
+		Player player = players.get(playerIndex);
+    	dealer.playerStand(player);
 		nextTurn();
 	}
 
@@ -313,19 +360,37 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void clearBet(int playerIndex) {
 		Player player = players.get(playerIndex);
 		player.clearBet();
+		dealer.clearBetMessage(player);
+    	updateValues();
 	}
 
 	public void allInBet(int playerIndex) {
 		Player player = players.get(playerIndex);
 		player.allIn();
+		dealer.allInMessage(player);
+		updateValues();
 	}
+
+	private String lastDealerMessage = "";
 
 	public void updateValues() {
 		Color colorText = Color.WHITE;
 
-		dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">"
-				+ dealer.says() + "</font></p></html>");
+		String dealerMessage = dealer.says();
 
+		if (!dealerMessage.equals(lastDealerMessage)) {
+			dealerHistory.add(dealerMessage);
+			lastDealerMessage = dealerMessage; // Atualizando com a última mensagem adicionada ao histórico
+		}
+
+		dealerSays.setText("<html><p align=\"center\"><font face=\"Serif\" color=\"white\" style=\"font-size: 20pt\">"
+				+ dealerMessage + "</font></p></html>");
+
+		// Atualiza o histórico na janela de histórico se ela estiver aberta
+		if (historyFrame != null) {
+			historyFrame.updateHistory();
+		}
+		
 		for (int i = 0; i < players.size(); i++) {
 			Player player = players.get(i);
 

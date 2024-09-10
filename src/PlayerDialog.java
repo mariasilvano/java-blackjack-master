@@ -17,7 +17,7 @@ public class PlayerDialog extends JDialog implements ActionListener {
 
 	JTextField playerName = new JTextField();
 	JTextField playerAge = new JTextField();
-	JComboBox playerGender = new JComboBox(genders);
+	JComboBox<String> playerGender = new JComboBox<>(genders);
 
 	public PlayerDialog(Frame owner, String title, boolean modal, Player player) {
 		super(owner, title, modal);

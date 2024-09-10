@@ -82,7 +82,7 @@ public class Dealer extends BlackjackPlayer {
 		boolean betSet = player.setBet(bet);
 
 		if (player.betPlaced()) {
-			say("Thank you for your bet of $" + player.getBet() + ". Would you like me to deal?");
+			say(player.getName() + ", thank you for your bet of $" + player.getBet() + ". Would you like me to deal?");
 		} else {
 			say("Please place your bet.");
 		}
@@ -94,12 +94,26 @@ public class Dealer extends BlackjackPlayer {
 		boolean betReduced = player.reduceBet(amount);
 
 		if (betReduced) {
-			say("The bet has been reduced by $" + amount + ". New bet is $" + player.getBet() + ".");
+			say(player.getName() + " reduced the bet by $" + amount + ". New bet is $" + player.getBet() + ".");
 		} else {
-			say("Bet reduction failed. Amount $" + amount + " exceeds current bet of $" + player.getBet() + ".");
+			say(player.getName() + " tried to reduce the bet, but this failed. Amount $" + amount + " exceeds current bet of $" + player.getBet() + ".");
 		}
 
 		return betReduced;
+	}
+
+	public void allInMessage(Player player) {
+		player.allIn();
+		say(player.getName() + " has gone all in with $" + player.getBet() + ".");
+	}
+
+	public void playerStand(Player player) {
+		say(player.getName() + " has chosen to stand.");
+	}
+
+	public void clearBetMessage(Player player) {
+		player.clearBet();
+		say(player.getName() + " has cleared their bet.");
 	}
 
 	/**
@@ -149,7 +163,7 @@ public class Dealer extends BlackjackPlayer {
 		player.hand.add(newCard);
 		if (!player.betPlaced()) {
 			deck.returnCard(newCard);
-			say("First place your bet.");
+			say(player.getName() + ". First place your bet.");
 			return;
 		}
 		say(player.getName() + " hits.");

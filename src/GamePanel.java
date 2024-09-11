@@ -394,7 +394,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		for (int i = 0; i < players.size(); i++) {
 			Player player = players.get(i);
 
-			doubleButtons.get(i).setEnabled(dealer.isPlayerEligibleForDouble(player));
+			doubleButtons.get(i).setEnabled(dealer.isPlayerEligibleForDouble(player)
+					&& dealer.isPlayerEligibleForAction(i, currentPlayerIndex));
 			hitButtons.get(i).setEnabled(dealer.isPlayerEligibleForAction(i, currentPlayerIndex));
 			standButtons.get(i).setEnabled(dealer.isPlayerEligibleForAction(i, currentPlayerIndex));
 			clearBetButtons.get(i).setEnabled(dealer.isGameOver() && player.betPlaced());

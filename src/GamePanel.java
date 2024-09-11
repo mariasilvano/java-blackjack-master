@@ -545,7 +545,6 @@ public class GamePanel extends JPanel implements ActionListener {
 			}
 			JOptionPane.showMessageDialog(this, message);
 			player.hand.clear();
-			player.hand.getTotal();
 		}
 		table.setGameOver(true);
 		updateValues();

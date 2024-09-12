@@ -103,7 +103,6 @@ public class Dealer extends BlackjackPlayer {
 	}
 
 	public void allInMessage(Player player) {
-		player.allIn();
 		say(player.getName() + " has gone all in with $" + player.getBet() + ".");
 	}
 
@@ -112,7 +111,6 @@ public class Dealer extends BlackjackPlayer {
 	}
 
 	public void clearBetMessage(Player player) {
-		player.clearBet();
 		say(player.getName() + " has cleared their bet.");
 	}
 
@@ -194,14 +192,7 @@ public class Dealer extends BlackjackPlayer {
 		}
 	}
 
-	/**
-	 * The player wishes to stand. The dealer then takes his go.
-	 *
-	 * @param player The player who wishes to stand.
-	 */
-	public void stand(Player player, ArrayList<Player> players) {
-		say(player.getName() + " stands.");
-	}
+	
 
 	/**
 	 * The dealers turn.

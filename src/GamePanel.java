@@ -441,14 +441,10 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 
 	private void moreFunds(Player player) {
-		int response = JOptionPane.showConfirmDialog(null,
-				"Marshall Aid. One Hundred dollars. With the compliments of the USA.", "Out of funds",
-				JOptionPane.YES_NO_OPTION);
+		JOptionPane.showMessageDialog(null, player.getName() + " went bankrupt. To receive a new balance amount, click ok to continue", "Out of funds", JOptionPane.INFORMATION_MESSAGE);
 
-		if (response == JOptionPane.YES_OPTION) {
-			player.setWallet(100.00);
-			updateValues();
-		}
+		player.setWallet(100.00);
+		updateValues();
 	}
 
 	public void savePlayer(int playerIndex) {

@@ -11,6 +11,8 @@ For build instructions, consult the `BUILDING` file.
 Alterações realizadas
 ========================
 
+Corrigido botão double conforme regras do jogo
+Corrigido nome dos players
 Alterado cor dos textos para ser possível visualizar com qualquer cor de fundo
 Limpar dados na tela ao finalizar
 Campos da action bloqueados igualmente com as funções dos botões inferiores

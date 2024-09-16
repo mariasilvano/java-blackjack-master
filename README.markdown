@@ -7,22 +7,35 @@ A Java Blackjack game written by [David Winter](http://davidwinter.me.uk) for a 
 
 For build instructions, consult the `BUILDING` file.
 
-===================
+=========================================================
+
 Alterações realizadas - Disciplina intensiva
-===================
-Corrigido botão double conforme regras do jogo /
-Corrigido nome dos players /
-Adição da funcionalidade para visualizar o histórico das jogadas /
-Adição dos botões para reduzir o valor da aposta de 1 em 1 e 10 em 10 /
-Adição do botão de "All In" /
-Ajuste do pop-up apresentado quando algum(uns) jogador(es) zera(m) seu saldo /
-Ajuste da funcionalidade de limpar placar /
-Ajuste na mensagem de aviso sobre todos os jogadores precisarem escolher um valor de aposta /
-Ajuste na responsividade (alguns botões ficavam ocultos) /
+
+=========================================================
+
+Corrigido botão double conforme regras do jogo 
+
+Corrigido nome dos players 
+
+Adição da funcionalidade para visualizar o histórico das jogadas 
+
+Adição dos botões para reduzir o valor da aposta de 1 em 1 e 10 em 10 
+
+Adição do botão de "All In" 
+
+Ajuste do pop-up apresentado quando algum(uns) jogador(es) zera(m) seu saldo 
+
+Ajuste da funcionalidade de limpar placar 
+
+Ajuste na mensagem de aviso sobre todos os jogadores precisarem escolher um valor de aposta 
+
+Ajuste na responsividade (alguns botões ficavam ocultos) 
+
 Ajuste no botão "Deal"
 
+==========================================================
 
-====================
+
 Alterado cor dos textos para ser possível visualizar com qualquer cor de fundo
 Limpar dados na tela ao finalizar
 Campos da action bloqueados igualmente com as funções dos botões inferiores
